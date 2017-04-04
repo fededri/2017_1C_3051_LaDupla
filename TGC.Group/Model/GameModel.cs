@@ -10,7 +10,8 @@ using TGC.Core.Textures;
 using TGC.Core.Utils;
 using TGC.Core.Camara;
 using TGC.Group.Camara;
-
+using System;
+using System.Collections.Generic;
 
 namespace TGC.Group.Model
 {
@@ -38,10 +39,14 @@ namespace TGC.Group.Model
         //Caja que se muestra en el ejemplo.
         private TgcBox Box { get; set; }
 
-        private TgcMesh pino;
+        private TgcMesh palmera;
 
         //Mesh de TgcLogo.
         private TgcMesh Mesh { get; set; }
+
+        private TgcPlane planoAgua;
+
+        private List<TgcMesh> palmeras;
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -58,15 +63,44 @@ namespace TGC.Group.Model
             var d3dDevice = D3DDevice.Instance.Device;
 
             var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\pasto.jpg");
-            suelo = new TgcPlane(new Vector3(-500, 0, -500), new Vector3(2000, 0, 2000), TgcPlane.Orientations.XZplane, pisoTexture, 10f, 10f);
+            var aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\agua.bmp");
+            suelo = new TgcPlane(new Vector3(-100, 0, -50), new Vector3(6000, 0, 5000), TgcPlane.Orientations.XZplane, pisoTexture, 200f, 200f);
+            planoAgua = new TgcPlane(new Vector3(-100, 0, -51), new Vector3(6000, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 20f, 20f);
             var loader = new TgcSceneLoader();
             var pinoScene =
-                loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Pino\\Pino-TgcScene.xml");
-            pino = pinoScene.Meshes[0];
+                loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
+            palmera = pinoScene.Meshes[0];
+            initPalmeras();
 
-            pino.move(2, 3, 3);
+            Camara = new TgcFpsCamera(new Vector3(900f, 400f, 900f), Input);
+        }
 
-            Camara = new TgcFpsCamera(new Vector3(0, 1, 0), Input);
+
+        //crea las instancias de las palmeras y las ubica de forma random en el espacio
+        private void initPalmeras()
+        {
+            palmeras = new List<TgcMesh>();
+            var rows = 30;
+            var cols = 5;
+            float offsetX, offsetZ;
+            var random = new Random();
+
+            for (var i = 0; i < rows; i++)
+            {
+                offsetX = random.Next(100, 200);
+                for (var j = 0; j < cols; j++)
+                {
+                    offsetZ = random.Next(50, 1000);
+                    //Crear instancia de modelo
+                    var instance = palmera.createMeshInstance(palmera.Name + i + "_" + j);
+                    instance.AutoTransformEnable = true;
+                    //Desplazarlo
+                    instance.move(i * offsetX, 0, j * offsetZ);
+                    //instance.Scale = new Vector3(0.25f, 0.25f, 0.25f);
+
+                    palmeras.Add(instance);
+                }
+            }
         }
 
         /// <summary>
@@ -89,7 +123,7 @@ namespace TGC.Group.Model
             {
                 //Como ejemplo podemos hacer un movimiento simple de la cámara.
               
-            }
+            }          
         }
 
         /// <summary>
@@ -110,7 +144,13 @@ namespace TGC.Group.Model
             }
 
             suelo.render();
-            pino.render();
+            planoAgua.render();
+        
+            foreach (var mesh in palmeras)
+            {
+                mesh.render();
+            }
+         
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();
@@ -124,6 +164,7 @@ namespace TGC.Group.Model
         public override void Dispose()
         {
             suelo.dispose();
+            palmera.dispose(); //solo se necesita dispose del pino original
         }
     }
 }
