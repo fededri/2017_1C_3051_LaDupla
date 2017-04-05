@@ -54,7 +54,7 @@ namespace TGC.Group.Model
         private List<TgcMesh> rocas;
         private List<TgcPlane> transicionesPastoArena;
        
-        TgcTexture transicionPastoArenaTexture;
+        TgcTexture transicionPastoArenaLeftTexture, transicionPastoArenaRightTexture, transicionPastoArenaDownTexture, transicionPastoArenaUpTexture;
         private const int planoTransicionPastoArenaAncho = 500;
         private const int anchoIsla = 6000;
 
@@ -73,13 +73,12 @@ namespace TGC.Group.Model
             var d3dDevice = D3DDevice.Instance.Device;
              var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\pasto.jpg");
             var aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\agua 10.jpg");
-            var arenaTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "Isla\\Textures\\sand.jpg");
-            transicionPastoArenaTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaLeft.jpg");
+            transicionPastoArenaLeftTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaRight.jpg");
+            transicionPastoArenaUpTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaUp.jpg");
 
             suelo = new TgcPlane(new Vector3(-100, 0, -50), new Vector3(anchoIsla, 0, 5000), TgcPlane.Orientations.XZplane, pisoTexture, 23f,15f);
-            planoTransicionPastoAgua = new TgcPlane(new Vector3(-100, 0, -60), new Vector3(10, 0, -10), TgcPlane.Orientations.XZplane, transicionPastoArenaTexture, 1f, 1f);
-            arena = new TgcPlane(new Vector3(-100, 0, -60), new Vector3(anchoIsla, 0, -150), TgcPlane.Orientations.XZplane, arenaTexture, 8f, 8f); 
-            planoAgua = new TgcPlane(new Vector3(-100, 0, -210), new Vector3(anchoIsla, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
+            planoTransicionPastoAgua = new TgcPlane(new Vector3(-100, 0, -300), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaLeftTexture, 1f, 1f);
+            planoAgua = new TgcPlane(new Vector3(-100, 0, -250), new Vector3(anchoIsla, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
           
 
             var loader = new TgcSceneLoader();
@@ -144,20 +143,26 @@ namespace TGC.Group.Model
 
         }
 
+        private const int altoTransicionPastoArena = 200;
 
         private void initTransicionPastoArena()
         {
-         
-
             transicionesPastoArena = new List<TgcPlane>();
             int startXPosition = -100;
-            while((startXPosition + planoTransicionPastoArenaAncho) < 6000)
+            while((startXPosition + planoTransicionPastoArenaAncho) < (6000))
             {
-                var plane = new TgcPlane(new Vector3(startXPosition, 0, -60), new Vector3(planoTransicionPastoArenaAncho, 0, 10), TgcPlane.Orientations.XZplane, transicionPastoArenaTexture, 2f, 1f);                
+                var plane = new TgcPlane(new Vector3(startXPosition, 0, -50), new Vector3(planoTransicionPastoArenaAncho, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaLeftTexture, 2f, 1f);                
                 transicionesPastoArena.Add(plane);
                 startXPosition += planoTransicionPastoArenaAncho;
             }
 
+           /* int startZPosition = 0;
+            while ((startZPosition + planoTransicionPastoArenaAncho) < 5000)
+            {
+                var plane = new TgcPlane(new Vector3(startXPosition, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane, transicionPastoArenaUpTexture, 1f, 1f);
+                transicionesPastoArena.Add(plane);
+                startZPosition += planoTransicionPastoArenaAncho;
+            }*/
            
 
         }
@@ -223,7 +228,6 @@ namespace TGC.Group.Model
             {
                 mesh.render();
             }
-            arena.render();
             
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
@@ -241,7 +245,7 @@ namespace TGC.Group.Model
             palmera.dispose();
             rocaOriginal.dispose();
             arena.dispose();
-            transicionPastoArenaTexture.dispose();
+            transicionPastoArenaLeftTexture.dispose();
         }
     }
 }
