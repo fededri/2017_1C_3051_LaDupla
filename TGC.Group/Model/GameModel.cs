@@ -57,6 +57,8 @@ namespace TGC.Group.Model
         TgcTexture transicionPastoArenaLeftTexture, transicionPastoArenaRightTexture, transicionPastoArenaDownTexture, transicionPastoArenaUpTexture;
         private const int planoTransicionPastoArenaAncho = 500;
         private const int anchoIsla = 6000;
+        private TgcTexture paredTexture;
+        private TgcPlane planoParedSuperior;
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -75,11 +77,13 @@ namespace TGC.Group.Model
             var aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\agua 10.jpg");
             transicionPastoArenaLeftTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaRight.jpg");
             transicionPastoArenaUpTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaUp.jpg");
+            paredTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Texturas\\BM_DiffuseMap_pared.jpg");
 
             suelo = new TgcPlane(new Vector3(-100, 0, -50), new Vector3(anchoIsla, 0, 5000), TgcPlane.Orientations.XZplane, pisoTexture, 23f,15f);
             planoTransicionPastoAgua = new TgcPlane(new Vector3(-100, 0, -300), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaLeftTexture, 1f, 1f);
             planoAgua = new TgcPlane(new Vector3(-100, 0, -250), new Vector3(anchoIsla, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
-          
+
+            planoParedSuperior = new TgcPlane(new Vector3(anchoIsla - 100, 0, - (altoTransicionPastoArena + 50)), new Vector3(100, 1500, anchoIsla - 800), TgcPlane.Orientations.YZplane, paredTexture, 3f, 3f);
 
             var loader = new TgcSceneLoader();
             var palmeraScene =
@@ -228,6 +232,8 @@ namespace TGC.Group.Model
             {
                 mesh.render();
             }
+
+            planoParedSuperior.render();
             
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
@@ -244,7 +250,7 @@ namespace TGC.Group.Model
             suelo.dispose();
             palmera.dispose();
             rocaOriginal.dispose();
-            arena.dispose();
+            planoParedSuperior.dispose();
             transicionPastoArenaLeftTexture.dispose();
         }
     }
