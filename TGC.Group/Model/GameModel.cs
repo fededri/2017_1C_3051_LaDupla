@@ -44,9 +44,12 @@ namespace TGC.Group.Model
         //Mesh de TgcLogo.
         private TgcMesh Mesh { get; set; }
 
+        private TgcMesh rocaOriginal;
+
         private TgcPlane planoAgua;
 
         private List<TgcMesh> palmeras;
+        private List<TgcMesh> rocas;
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -64,13 +67,18 @@ namespace TGC.Group.Model
 
             var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\pasto.jpg");
             var aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\agua.bmp");
+
             suelo = new TgcPlane(new Vector3(-100, 0, -50), new Vector3(6000, 0, 5000), TgcPlane.Orientations.XZplane, pisoTexture, 200f, 200f);
             planoAgua = new TgcPlane(new Vector3(-100, 0, -51), new Vector3(6000, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 20f, 20f);
             var loader = new TgcSceneLoader();
             var pinoScene =
                 loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
             palmera = pinoScene.Meshes[0];
+
+            var rocaScene = loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Roca\\Roca-TgcScene.xml");
+            rocaOriginal = rocaScene.Meshes[0];
             initPalmeras();
+            initRocas();
 
             Camara = new TgcFpsCamera(new Vector3(900f, 400f, 900f), Input);
         }
@@ -101,6 +109,27 @@ namespace TGC.Group.Model
                     palmeras.Add(instance);
                 }
             }
+        }
+
+
+        private void initRocas()
+        {
+            rocas = new List<TgcMesh>();
+            rocaOriginal.move(100, 0, 100);
+            var random = new Random();
+            for (var i = 0; i < 100; i++)
+            {
+                var offsetX = random.Next(1, 6000);
+                var offsetZ = random.Next(1, 5000);
+                var instance = rocaOriginal.createMeshInstance(rocaOriginal.Name + "i");
+
+                instance.AutoTransformEnable = true;
+
+                instance.move(offsetX, 0, offsetZ);
+                rocas.Add(instance);
+           
+            }
+
         }
 
         /// <summary>
@@ -146,7 +175,14 @@ namespace TGC.Group.Model
             suelo.render();
             planoAgua.render();
         
+            //renderizado de palmeras
             foreach (var mesh in palmeras)
+            {
+                mesh.render();
+            }
+
+            //renderizado de rocas
+            foreach  ( var mesh in rocas)
             {
                 mesh.render();
             }
@@ -165,6 +201,7 @@ namespace TGC.Group.Model
         {
             suelo.dispose();
             palmera.dispose(); //solo se necesita dispose del pino original
+            rocaOriginal.dispose();
         }
     }
 }
