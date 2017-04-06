@@ -105,8 +105,8 @@ namespace TGC.Group.Camara
             //Forward
             if (Input.keyDown(Key.W))
             {
-                moveVector.Z = -MovementSpeed;
-                //moveVector += new Vector3(0, 0, -1) * MovementSpeed;
+               // moveVector.Z = -MovementSpeed;
+                moveVector += new Vector3(0, 0, -1) * MovementSpeed;
             }
 
             //Backward

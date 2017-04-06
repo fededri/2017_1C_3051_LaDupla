@@ -53,12 +53,14 @@ namespace TGC.Group.Model
         private List<TgcMesh> palmeras;
         private List<TgcMesh> rocas;
         private List<TgcPlane> transicionesPastoArena;
+        private List<TgcMesh> arbustos;
        
         TgcTexture transicionPastoArenaLeftTexture, transicionPastoArenaRightTexture, transicionPastoArenaDownTexture, transicionPastoArenaUpTexture;
         private const int planoTransicionPastoArenaAncho = 500;
         private const int anchoIsla = 6000;
         private TgcTexture paredTexture;
         private TgcPlane planoParedSuperior, planoParedXYAtras, planoParedYZAbajo;
+        private TgcMesh arbusto;
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -81,7 +83,7 @@ namespace TGC.Group.Model
 
             suelo = new TgcPlane(new Vector3(-100, 0, -50), new Vector3(anchoIsla, 0, 5000), TgcPlane.Orientations.XZplane, pisoTexture, 23f,15f);
             planoTransicionPastoAgua = new TgcPlane(new Vector3(-100, 0, -300), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaLeftTexture, 1f, 1f);
-            planoAgua = new TgcPlane(new Vector3(-100, 0, -250), new Vector3(anchoIsla, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
+            planoAgua = new TgcPlane(new Vector3(-1000, 0, -250), new Vector3(anchoIsla + 3000, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
 
             planoParedSuperior = new TgcPlane(new Vector3(anchoIsla - 100, 0, - (altoTransicionPastoArena + 50)), new Vector3(100, 1500, anchoIsla - 800), TgcPlane.Orientations.YZplane, paredTexture, 3f, 3f);
             planoParedYZAbajo = new TgcPlane(new Vector3(-100, 0,-(altoTransicionPastoArena + 50)), new Vector3(-100, 1500, anchoIsla - 800), TgcPlane.Orientations.YZplane, paredTexture, 3f, 3f);
@@ -90,14 +92,19 @@ namespace TGC.Group.Model
             var loader = new TgcSceneLoader();
             var palmeraScene =
                 loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
+            var arbustoScene = loader.loadSceneFromFile(MediaDir + "\\MeshCreator\\Meshes\\Vegetacion\\Planta2\\Planta2-TgcScene.xml");
+            arbusto = arbustoScene.Meshes[0];
             palmera = palmeraScene.Meshes[0];
+
+     
 
             var rocaScene = loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Roca\\Roca-TgcScene.xml");
             rocaOriginal = rocaScene.Meshes[0];
             initPalmeras();
             initRocas();
             initTransicionPastoArena();
-            Camara = new TgcFpsCamera(new Vector3(900f, 400f, 900f), Input);
+            initArbustos();
+            Camara = new TgcFpsCamera(new Vector3(200f, 10f, -10f), Input);
         }
 
 
@@ -147,6 +154,23 @@ namespace TGC.Group.Model
            
             }
 
+        }
+
+
+        private void initArbustos()
+        {
+            arbustos = new List<TgcMesh>();
+            var random = new Random();
+            for(var i = 0; i<50; i++)
+            {
+                var offsetX = random.Next(1, 6000);
+                var offsetZ = random.Next(300, 5000);
+                var instance = arbusto.createMeshInstance(arbusto.Name + "i");
+                instance.AutoTransformEnable = true;
+
+                instance.move(offsetX, 0, offsetZ);
+                arbustos.Add(instance);
+            }
         }
 
         private const int altoTransicionPastoArena = 200;
@@ -235,6 +259,11 @@ namespace TGC.Group.Model
                 mesh.render();
             }
 
+            foreach ( var mesh in arbustos)
+            {
+                mesh.render();
+            }
+
             planoParedSuperior.render();
             planoParedYZAbajo.render();
             planoParedXYAtras.render();
@@ -255,6 +284,7 @@ namespace TGC.Group.Model
             rocaOriginal.dispose();
             planoParedSuperior.dispose();
             transicionPastoArenaLeftTexture.dispose();
+            arbusto.dispose();
         }
     }
 }
