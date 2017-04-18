@@ -48,18 +48,19 @@ namespace TGC.Group.Model
 
         private TgcPlane planoAgua;
         private TgcPlane planoTransicionPastoAgua;
-        private TgcPlane arena;
+        private List<TgcPlane> esquinasArena;
+
+        private TgcTexture arenaTexture;
 
         private List<TgcMesh> palmeras;
         private List<TgcMesh> rocas;
         private List<TgcPlane> transicionesPastoArena;
         private List<TgcMesh> arbustos;
        
-        TgcTexture transicionPastoArenaLeftTexture, transicionPastoArenaRightTexture, transicionPastoArenaDownTexture, transicionPastoArenaUpTexture;
+        TgcTexture transicionPastoArenaRightTexture,transicionPastoArenaDownTexture, transicionPastoArenaUpTexture;
         private const int planoTransicionPastoArenaAncho = 500;
-        private const int anchoIsla = 6000;
-        private TgcTexture paredTexture;
-        private TgcPlane planoParedSuperior, planoParedXYAtras, planoParedYZAbajo;
+        private const int anchoIsla = 30000;
+        private const int altoIsla = 30000;
         private TgcMesh arbusto;
 
         //Boleano para ver si dibujamos el boundingbox
@@ -77,18 +78,17 @@ namespace TGC.Group.Model
             var d3dDevice = D3DDevice.Instance.Device;
              var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\pasto.jpg");
             var aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\agua 10.jpg");
-            transicionPastoArenaLeftTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaRight.jpg");
-            transicionPastoArenaUpTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaUp.jpg");
-            paredTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Texturas\\BM_DiffuseMap_pared.jpg");
+            transicionPastoArenaRightTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaRight.jpg");
+            transicionPastoArenaDownTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaDown.jpg");
+            transicionPastoArenaUpTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaUP.jpg");
 
-            suelo = new TgcPlane(new Vector3(-100, 0, -50), new Vector3(anchoIsla, 0, 5000), TgcPlane.Orientations.XZplane, pisoTexture, 23f,15f);
-            planoTransicionPastoAgua = new TgcPlane(new Vector3(-100, 0, -300), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaLeftTexture, 1f, 1f);
-            planoAgua = new TgcPlane(new Vector3(-1000, 0, -250), new Vector3(anchoIsla + 3000, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
+            arenaTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "Isla\\Textures\\sand.jpg");
 
-            planoParedSuperior = new TgcPlane(new Vector3(anchoIsla - 100, 0, - (altoTransicionPastoArena + 50)), new Vector3(100, 1500, anchoIsla - 800), TgcPlane.Orientations.YZplane, paredTexture, 3f, 3f);
-            planoParedYZAbajo = new TgcPlane(new Vector3(-100, 0,-(altoTransicionPastoArena + 50)), new Vector3(-100, 1500, anchoIsla - 800), TgcPlane.Orientations.YZplane, paredTexture, 3f, 3f);
-            planoParedXYAtras = new TgcPlane(new Vector3(-100, 0,5000 - 50), new Vector3(anchoIsla, 1500, 100), TgcPlane.Orientations.XYplane, paredTexture, 3f, 3f);
+            suelo = new TgcPlane(new Vector3(0, 0, 0), new Vector3(anchoIsla, 0, altoIsla), TgcPlane.Orientations.XZplane, pisoTexture, 50f,50f);
+            planoTransicionPastoAgua = new TgcPlane(new Vector3(0, 0,0), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 1f, 1f);
+            planoAgua = new TgcPlane(new Vector3(-1000, 0, -altoTransicionPastoArena), new Vector3(anchoIsla + 3000, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
 
+          
             var loader = new TgcSceneLoader();
             var palmeraScene =
                 loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
@@ -104,7 +104,7 @@ namespace TGC.Group.Model
             initRocas();
             initTransicionPastoArena();
             initArbustos();
-            Camara = new TgcFpsCamera(new Vector3(200f, 10f, -10f), Input);
+            Camara = new TgcFpsCamera(new Vector3(0f, 10f, altoIsla), Input);
         }
 
 
@@ -178,22 +178,49 @@ namespace TGC.Group.Model
         private void initTransicionPastoArena()
         {
             transicionesPastoArena = new List<TgcPlane>();
-            int startXPosition = -100;
-            while((startXPosition + planoTransicionPastoArenaAncho) < (6000))
+
+            //x+ z-
+            int startXPosition = 0;
+            while((startXPosition + planoTransicionPastoArenaAncho) <= (anchoIsla))
             {
-                var plane = new TgcPlane(new Vector3(startXPosition, 0, -50), new Vector3(planoTransicionPastoArenaAncho, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaLeftTexture, 2f, 1f);                
+                var plane = new TgcPlane(new Vector3(startXPosition, 0, 0), new Vector3(planoTransicionPastoArenaAncho, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 2f, 1f);                
                 transicionesPastoArena.Add(plane);
                 startXPosition += planoTransicionPastoArenaAncho;
             }
 
-           /* int startZPosition = 0;
-            while ((startZPosition + planoTransicionPastoArenaAncho) < 5000)
+            //x fijo z+
+            int startZPosition = -85;
+            var arena = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0, -altoTransicionPastoArena), new Vector3(200, 0, 115), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
+            esquinasArena = new List<TgcPlane>();
+            esquinasArena.Add(arena);
+            while ( startZPosition + planoTransicionPastoArenaAncho <= altoIsla)
             {
-                var plane = new TgcPlane(new Vector3(startXPosition, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane, transicionPastoArenaUpTexture, 1f, 1f);
+                var plane = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane, 
+                            transicionPastoArenaDownTexture, 1f, 2f);
                 transicionesPastoArena.Add(plane);
                 startZPosition += planoTransicionPastoArenaAncho;
-            }*/
-           
+            }
+
+            //x+ z +
+            startXPosition = 0;
+            arena = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0, altoIsla), new Vector3(115, 0, altoTransicionPastoArena), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
+            esquinasArena.Add(arena);
+            while ((startXPosition + planoTransicionPastoArenaAncho) <= (anchoIsla))
+            {
+                var plane = new TgcPlane(new Vector3(startXPosition, 0, altoIsla), new Vector3(planoTransicionPastoArenaAncho + 200, 0, altoTransicionPastoArena +50), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 2f, 1f);
+                transicionesPastoArena.Add(plane);
+                startXPosition += planoTransicionPastoArenaAncho;
+            }
+
+
+            /* int startZPosition = 0;
+             while ((startZPosition + planoTransicionPastoArenaAncho) < 5000)
+             {
+                 var plane = new TgcPlane(new Vector3(startXPosition, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane, transicionPastoArenaUpTexture, 1f, 1f);
+                 transicionesPastoArena.Add(plane);
+                 startZPosition += planoTransicionPastoArenaAncho;
+             }*/
+
 
         }
 
@@ -264,9 +291,11 @@ namespace TGC.Group.Model
                 mesh.render();
             }
 
-            planoParedSuperior.render();
-            planoParedYZAbajo.render();
-            planoParedXYAtras.render();
+            foreach( var arena in esquinasArena)
+            {
+                arena.render();
+            }
+
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();
@@ -282,9 +311,9 @@ namespace TGC.Group.Model
             suelo.dispose();
             palmera.dispose();
             rocaOriginal.dispose();
-            planoParedSuperior.dispose();
-            transicionPastoArenaLeftTexture.dispose();
+            transicionPastoArenaRightTexture.dispose();
             arbusto.dispose();
+            arenaTexture.dispose();
         }
     }
 }
