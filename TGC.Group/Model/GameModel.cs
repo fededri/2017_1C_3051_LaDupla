@@ -12,6 +12,7 @@ using TGC.Core.Camara;
 using TGC.Group.Camara;
 using System;
 using System.Collections.Generic;
+using TGC.Core.Terrain;
 
 namespace TGC.Group.Model
 {
@@ -56,12 +57,15 @@ namespace TGC.Group.Model
         private List<TgcMesh> rocas;
         private List<TgcPlane> transicionesPastoArena;
         private List<TgcMesh> arbustos;
+        private List<TgcPlane> planosAgua;
+        private TgcSkyBox skyBox;
        
         TgcTexture transicionPastoArenaRightTexture,transicionPastoArenaDownTexture, transicionPastoArenaUpTexture, transicionPastoArenaLeftTexture;
         private const int planoTransicionPastoArenaAncho = 500;
         private const int anchoIsla = 30000;
         private const int altoIsla = 30000;
         private TgcMesh arbusto;
+        private TgcTexture aguaTexture;
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -74,20 +78,35 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Init()
         {
+            skyBox = new TgcSkyBox();
+            skyBox.Center = new Vector3(0, 0, 0);
+            skyBox.Size = new Vector3(40000, 40000,40000);
+
+            var texturesPath = MediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
+            //Configurar las texturas para cada una de las 6 caras
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "lostatseaday_up.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "lostatseaday_dn.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "lostatseaday_lf.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "lostatseaday_rt.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "lostatseaday_bk.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "lostatseaday_ft.jpg");
+            skyBox.SkyEpsilon = 25f;
+            skyBox.Init();
+
             //Device de DirectX para crear primitivas.
             var d3dDevice = D3DDevice.Instance.Device;
              var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\pasto.jpg");
-            var aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\agua 10.jpg");
+            aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\agua 10.jpg");
             transicionPastoArenaRightTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaRight.jpg");
             transicionPastoArenaDownTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaDown.jpg");
             transicionPastoArenaUpTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaUP.jpg");
             transicionPastoArenaLeftTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaLeft.jpg");
 
+
             arenaTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "Isla\\Textures\\sand.jpg");
 
             suelo = new TgcPlane(new Vector3(0, 0, 0), new Vector3(anchoIsla, 0, altoIsla), TgcPlane.Orientations.XZplane, pisoTexture, 50f,50f);
             planoTransicionPastoAgua = new TgcPlane(new Vector3(0, 0,0), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 1f, 1f);
-            planoAgua = new TgcPlane(new Vector3(-1000, 0, -altoTransicionPastoArena), new Vector3(anchoIsla + 3000, 0, -3000), TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
 
           
             var loader = new TgcSceneLoader();
@@ -105,6 +124,7 @@ namespace TGC.Group.Model
             initRocas();
             initTransicionPastoArena();
             initArbustos();
+            initAgua();
             Camara = new TgcFpsCamera(new Vector3(30000f, 10f, 0), Input);
         }
 
@@ -166,6 +186,32 @@ namespace TGC.Group.Model
                 else instance.Scale = new Vector3(1f, 1f, 1f);
                 arbustos.Add(instance);
             }
+        }
+
+        private void initAgua()
+        {
+            planosAgua = new List<TgcPlane>();
+
+            var plano = new TgcPlane(new Vector3(-planoTransicionPastoArenaAncho, 0, -altoTransicionPastoArena), new Vector3(anchoIsla + 40000, 0, -10000),
+                TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
+            planosAgua.Add(plano);
+
+            plano = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0,-altoTransicionPastoArena), new Vector3(-10000, 0, altoIsla+10000),
+                TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
+
+            planosAgua.Add(plano);
+
+            plano = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0, altoIsla + altoTransicionPastoArena + 50), new Vector3(40000, 0, 40000),
+             TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
+
+            planosAgua.Add(plano);
+
+            plano = new TgcPlane(new Vector3(anchoIsla + altoTransicionPastoArena, 0, -altoTransicionPastoArena), new Vector3(40000, 0, 40000),
+            TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
+
+            planosAgua.Add(plano);
+
+
         }
 
         private const int altoTransicionPastoArena = 200;
@@ -255,7 +301,16 @@ namespace TGC.Group.Model
             {
                 //Como ejemplo podemos hacer un movimiento simple de la cámara.
               
-            }          
+            }
+
+            D3DDevice.Instance.Device.Transform.Projection =
+              Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
+                  D3DDevice.Instance.AspectRatio,
+                  D3DDevice.Instance.ZNearPlaneDistance,
+                  D3DDevice.Instance.ZFarPlaneDistance * 2f);
+
+            skyBox.Center = Camara.Position;
+
         }
 
         /// <summary>
@@ -276,7 +331,7 @@ namespace TGC.Group.Model
             }
 
             suelo.render();
-            planoAgua.render();
+            
         
             //renderizado de palmeras
             foreach (var mesh in palmeras)
@@ -307,6 +362,12 @@ namespace TGC.Group.Model
                 arena.render();
             }
 
+            foreach(var plano in planosAgua)
+            {
+                plano.render();
+            }
+
+            skyBox.render();
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();
@@ -328,6 +389,7 @@ namespace TGC.Group.Model
             transicionPastoArenaUpTexture.dispose();
             arbusto.dispose();
             arenaTexture.dispose();
+            skyBox.dispose();
         }
     }
 }
