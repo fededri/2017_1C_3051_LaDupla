@@ -57,7 +57,7 @@ namespace TGC.Group.Model
         private List<TgcPlane> transicionesPastoArena;
         private List<TgcMesh> arbustos;
        
-        TgcTexture transicionPastoArenaRightTexture,transicionPastoArenaDownTexture, transicionPastoArenaUpTexture;
+        TgcTexture transicionPastoArenaRightTexture,transicionPastoArenaDownTexture, transicionPastoArenaUpTexture, transicionPastoArenaLeftTexture;
         private const int planoTransicionPastoArenaAncho = 500;
         private const int anchoIsla = 30000;
         private const int altoIsla = 30000;
@@ -81,6 +81,7 @@ namespace TGC.Group.Model
             transicionPastoArenaRightTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaRight.jpg");
             transicionPastoArenaDownTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaDown.jpg");
             transicionPastoArenaUpTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaUP.jpg");
+            transicionPastoArenaLeftTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaLeft.jpg");
 
             arenaTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "Isla\\Textures\\sand.jpg");
 
@@ -104,52 +105,44 @@ namespace TGC.Group.Model
             initRocas();
             initTransicionPastoArena();
             initArbustos();
-            Camara = new TgcFpsCamera(new Vector3(0f, 10f, altoIsla), Input);
+            Camara = new TgcFpsCamera(new Vector3(30000f, 10f, 0), Input);
         }
 
 
         //crea las instancias de las palmeras y las ubica de forma random en el espacio
         private void initPalmeras()
         {
-            palmeras = new List<TgcMesh>();
-            var rows = 30;
-            var cols = 5;
+            palmeras = new List<TgcMesh>();        
             float offsetX, offsetZ;
             var random = new Random();
 
-            for (var i = 0; i < rows; i++)
+            for(var i = 0; i < 500; i++)
             {
-                offsetX = random.Next(100, 200);
-                for (var j = 0; j < cols; j++)
-                {
-                    offsetZ = random.Next(50, 1000);
-                    //Crear instancia de modelo
-                    var instance = palmera.createMeshInstance(palmera.Name + i + "_" + j);
-                    instance.AutoTransformEnable = true;
-                    //Desplazarlo
-                    instance.move(i * offsetX, 0, j * offsetZ);
-                    //instance.Scale = new Vector3(0.25f, 0.25f, 0.25f);
-
-                    palmeras.Add(instance);
-                }
-            }
+                offsetX = random.Next(100, 29900);
+                offsetZ = random.Next(100, 29900);
+                var instance = palmera.createMeshInstance(palmera.Name + i);
+                instance.AutoTransformEnable = true;
+                instance.move(offsetX, 0, offsetZ);
+             
+               instance.Scale = new Vector3(3f, 5f, 3f);
+                palmeras.Add(instance);
+            }     
         }
 
 
         private void initRocas()
         {
             rocas = new List<TgcMesh>();
-            rocaOriginal.move(100, 0, 100);
             var random = new Random();
             for (var i = 0; i < 100; i++)
             {
-                var offsetX = random.Next(1, 6000);
-                var offsetZ = random.Next(1, 5000);
+                var offsetX = random.Next(1, 28000) + random.Next(100);
+                var offsetZ = random.Next(1, 28000) + random.Next(100);
                 var instance = rocaOriginal.createMeshInstance(rocaOriginal.Name + "i");
 
                 instance.AutoTransformEnable = true;
-
                 instance.move(offsetX, 0, offsetZ);
+                instance.Scale = new Vector3(5f, 2f, 5f);
                 rocas.Add(instance);
            
             }
@@ -161,14 +154,16 @@ namespace TGC.Group.Model
         {
             arbustos = new List<TgcMesh>();
             var random = new Random();
-            for(var i = 0; i<50; i++)
+            for(var i = 0; i<500; i++)
             {
-                var offsetX = random.Next(1, 6000);
-                var offsetZ = random.Next(300, 5000);
+                var offsetX = random.Next(1, 29900);
+                var offsetZ = random.Next(300, 29900);
                 var instance = arbusto.createMeshInstance(arbusto.Name + "i");
                 instance.AutoTransformEnable = true;
 
                 instance.move(offsetX, 0, offsetZ);
+                if (random.Next(0, 2) == 1) { instance.Scale = new Vector3(5f, 5f, 5f); }
+                else instance.Scale = new Vector3(1f, 1f, 1f);
                 arbustos.Add(instance);
             }
         }
@@ -203,15 +198,31 @@ namespace TGC.Group.Model
 
             //x+ z +
             startXPosition = 0;
-            arena = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0, altoIsla), new Vector3(115, 0, altoTransicionPastoArena), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
+            arena = new TgcPlane(new Vector3(-(altoTransicionPastoArena), 0, altoIsla - 85), new Vector3(200, 0, 335), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
             esquinasArena.Add(arena);
-            while ((startXPosition + planoTransicionPastoArenaAncho) <= (anchoIsla))
+            while ((startXPosition + planoTransicionPastoArenaAncho) < (anchoIsla))
             {
                 var plane = new TgcPlane(new Vector3(startXPosition, 0, altoIsla), new Vector3(planoTransicionPastoArenaAncho + 200, 0, altoTransicionPastoArena +50), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 2f, 1f);
                 transicionesPastoArena.Add(plane);
                 startXPosition += planoTransicionPastoArenaAncho;
             }
 
+            //x a la derecha fijo z +
+            startZPosition = -85;
+            arena = new TgcPlane(new Vector3(anchoIsla , 0, altoIsla -85), new Vector3(200, 0, 340), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
+            esquinasArena.Add(arena);
+            arena = new TgcPlane(new Vector3(anchoIsla -300, 0, altoIsla), new Vector3(300, 0, 250), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
+            esquinasArena.Add(arena);
+            while (startZPosition + planoTransicionPastoArenaAncho <= (altoIsla))
+            {
+                var plane = new TgcPlane(new Vector3(anchoIsla, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane,
+                            transicionPastoArenaUpTexture, 1f, 2f);
+                transicionesPastoArena.Add(plane);
+                startZPosition += planoTransicionPastoArenaAncho;
+            }
+
+            arena = new TgcPlane(new Vector3(anchoIsla, 0,- altoTransicionPastoArena), new Vector3(200, 0, 120), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
+            esquinasArena.Add(arena);
 
             /* int startZPosition = 0;
              while ((startZPosition + planoTransicionPastoArenaAncho) < 5000)
@@ -312,6 +323,9 @@ namespace TGC.Group.Model
             palmera.dispose();
             rocaOriginal.dispose();
             transicionPastoArenaRightTexture.dispose();
+            transicionPastoArenaDownTexture.dispose();
+            transicionPastoArenaLeftTexture.dispose();
+            transicionPastoArenaUpTexture.dispose();
             arbusto.dispose();
             arenaTexture.dispose();
         }
