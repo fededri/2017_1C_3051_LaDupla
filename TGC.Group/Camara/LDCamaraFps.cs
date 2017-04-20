@@ -88,6 +88,7 @@ namespace TGC.Group.Camara
         {
             resetValues();
             this.personaje = personaje;
+            enable = true;
         }
 
         private float DegreeToRadian(float angle)
@@ -342,9 +343,10 @@ namespace TGC.Group.Camara
             reconstructViewMatrix(false);
         }
 
-
-        public void updateCamera()
+      
+        public override void UpdateCamera(float elapsedTime)
         {
+            base.UpdateCamera(elapsedTime);
             //Si la camara no está habilitada, no procesar el resto del input
             //log.log("update", Color.Red);
             if (!enable)

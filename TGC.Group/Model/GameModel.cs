@@ -132,7 +132,7 @@ namespace TGC.Group.Model
             Human human = factory.createHuman(posicionPersonaje, new Vector3(2, 2, 2));
             Camara = new LDCamaraFps(human);
             Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
-
+            
 
         }
 
