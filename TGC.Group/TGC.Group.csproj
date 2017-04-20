@@ -73,6 +73,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camara\GuiController.cs" />
+    <Compile Include="Camara\Human.cs" />
+    <Compile Include="Camara\LDCamaraFps.cs" />
     <Compile Include="Camara\TgcFpsCamera.cs" />
     <Compile Include="Form\GameForm.cs">
       <SubType>Form</SubType>
@@ -85,6 +88,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="InventarioYObjetos\Inventory.cs" />
+    <Compile Include="InventarioYObjetos\ObjectsFactory.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

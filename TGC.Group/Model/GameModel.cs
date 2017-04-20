@@ -13,6 +13,7 @@ using TGC.Group.Camara;
 using System;
 using System.Collections.Generic;
 using TGC.Core.Terrain;
+using TGC.Group.InventarioYObjetos;
 
 namespace TGC.Group.Model
 {
@@ -80,7 +81,7 @@ namespace TGC.Group.Model
         {
             skyBox = new TgcSkyBox();
             skyBox.Center = new Vector3(0, 0, 0);
-            skyBox.Size = new Vector3(40000, 40000,40000);
+            skyBox.Size = new Vector3(28000, 10000,28000);
 
             var texturesPath = MediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
             //Configurar las texturas para cada una de las 6 caras
@@ -125,10 +126,17 @@ namespace TGC.Group.Model
             initTransicionPastoArena();
             initArbustos();
             initAgua();
-            Camara = new TgcFpsCamera(new Vector3(30000f, 10f, 0), Input);
+           // Camara = new TgcFpsCamera(new Vector3(30000f, 10f, 0), Input);
+            Vector3 posicionPersonaje = new Vector3(0, 10,0);
+            ObjectsFactory factory = new ObjectsFactory(MediaDir);
+            Human human = factory.createHuman(posicionPersonaje, new Vector3(2, 2, 2));
+            Camara = new LDCamaraFps(human);
+            Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
+
+
         }
 
-
+        #region inits
         //crea las instancias de las palmeras y las ubica de forma random en el espacio
         private void initPalmeras()
         {
@@ -281,6 +289,8 @@ namespace TGC.Group.Model
 
         }
 
+        #endregion inits
+
         /// <summary>
         ///     Se llama en cada frame.
         ///     Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones
@@ -289,6 +299,9 @@ namespace TGC.Group.Model
         public override void Update()
         {
             PreUpdate();
+
+            GuiController.Instance.ElapsedTime = ElapsedTime;
+            Camara.UpdateCamera(ElapsedTime);
 
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))
