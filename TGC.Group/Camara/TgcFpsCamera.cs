@@ -30,6 +30,7 @@ namespace TGC.Group.Camara
 
         private bool lockCam;
         private Vector3 positionEye;
+        private float DEFAULT_HEIGHT = 100f;
 
         public TgcFpsCamera(TgcD3dInput input)
         {
@@ -50,6 +51,7 @@ namespace TGC.Group.Camara
         public TgcFpsCamera(Vector3 positionEye, TgcD3dInput input) : this(input)
         {
             this.positionEye = positionEye;
+            DEFAULT_HEIGHT = positionEye.Y;
         }
 
         public TgcFpsCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input)
@@ -130,7 +132,11 @@ namespace TGC.Group.Camara
             //Jump
             if (Input.keyDown(Key.Space))
             {
-                moveVector += new Vector3(0, 1, 0) * JumpSpeed;
+                if(positionEye.Y < DEFAULT_HEIGHT)
+                {
+                    moveVector += new Vector3(0, 1, 0) * JumpSpeed;
+                }
+               
             }
 
             //Crouch
@@ -158,7 +164,13 @@ namespace TGC.Group.Camara
 
             //Calculamos la nueva posicion del ojo segun la rotacion actual de la camara.
             var cameraRotatedPositionEye = Vector3.TransformNormal(moveVector * elapsedTime, cameraRotation);
-            positionEye += cameraRotatedPositionEye;
+            //positionEye += cameraRotatedPositionEye;
+            var positionEyeMoveVector = moveVector;
+            positionEyeMoveVector += cameraRotatedPositionEye;
+
+            var rotated = cameraRotatedPositionEye;
+            rotated.Y = 0;
+            positionEye += rotated;
 
             //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
             var cameraRotatedTarget = Vector3.TransformNormal(directionView, cameraRotation);

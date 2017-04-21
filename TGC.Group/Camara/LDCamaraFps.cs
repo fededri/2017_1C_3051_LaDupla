@@ -348,14 +348,11 @@ namespace TGC.Group.Camara
         {
             base.UpdateCamera(elapsedTime);
             //Si la camara no está habilitada, no procesar el resto del input
-            //log.log("update", Color.Red);
+            
             if (!enable)
             {
-                //log.log("update no enable", Color.Red);
                 return;
             }
-
-
             float elapsedTimeSec = GuiController.Instance.ElapsedTime;
             TgcD3dInput d3dInput = GuiController.Instance.D3dInput;
      
@@ -365,22 +362,16 @@ namespace TGC.Group.Camara
 
             //Obtener direccion segun entrada de teclado y mouse
             Vector3 direction = getMovementDirection(d3dInput);
-            //log.logVector3(direction);
+       
             captureMouse();
             pitch = d3dInput.YposRelative * rotationSpeed;
-            //log.log(pitch.ToString());
-            heading = d3dInput.XposRelative * rotationSpeed;
-            //log.log(heading.ToString());
+          
+            heading = d3dInput.XposRelative * rotationSpeed;   
 
             //para que rote siempre
             rotateSmoothly(heading, pitch, 0.0f);
 
-            /*
-            Vector3[] values = this.game.tryToMovePlayer(this.Position, direction);
-            Vector3 finalDirection = values[1];
-            */
-
-            //this.setPosition(values[0]);
+         
             updatePosition(direction, elapsedTimeSec);
         }
 
@@ -484,7 +475,6 @@ namespace TGC.Group.Camara
             {
                 moveDownPressed = false;
             }
-            //personaje.movete(direction);
 
             if (hayColision())
             {

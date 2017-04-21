@@ -20,7 +20,6 @@ namespace TGC.Group.Camara
                 if (instance == null)
                 {
                     instance = new GuiController();
-                    instance.D3dInput = new TgcD3dInput();
                 }
                 return instance;
             }

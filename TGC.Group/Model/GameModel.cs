@@ -67,6 +67,7 @@ namespace TGC.Group.Model
         private const int altoIsla = 30000;
         private TgcMesh arbusto;
         private TgcTexture aguaTexture;
+        LDCamaraFps cam;
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -109,7 +110,7 @@ namespace TGC.Group.Model
             suelo = new TgcPlane(new Vector3(0, 0, 0), new Vector3(anchoIsla, 0, altoIsla), TgcPlane.Orientations.XZplane, pisoTexture, 50f,50f);
             planoTransicionPastoAgua = new TgcPlane(new Vector3(0, 0,0), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 1f, 1f);
 
-          
+         
             var loader = new TgcSceneLoader();
             var palmeraScene =
                 loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
@@ -126,13 +127,18 @@ namespace TGC.Group.Model
             initTransicionPastoArena();
             initArbustos();
             initAgua();
-           // Camara = new TgcFpsCamera(new Vector3(30000f, 10f, 0), Input);
-            Vector3 posicionPersonaje = new Vector3(0, 10,0);
+            Camara = new TgcFpsCamera(new Vector3(0, 100f, 0), Input);
+
+            GuiController.Instance.D3dInput = Input;
+            Vector3 posicionPersonaje = new Vector3(0, 50,0);
             ObjectsFactory factory = new ObjectsFactory(MediaDir);
             Human human = factory.createHuman(posicionPersonaje, new Vector3(2, 2, 2));
-            Camara = new LDCamaraFps(human);
-            Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
-            
+            cam = new LDCamaraFps(human);
+            cam.alturaPreseteada = 100;
+            cam.setCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
+            Input.EnableMouseSmooth = true;
+            ///Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
+        
 
         }
 
@@ -381,6 +387,9 @@ namespace TGC.Group.Model
             }
 
             skyBox.render();
+
+            cam.Enable = true;
+            cam.setPosition(new Vector3(cam.Position.X,cam.alturaPreseteada, cam.Position.Y));
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();
