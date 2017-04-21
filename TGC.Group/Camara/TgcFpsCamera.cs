@@ -150,6 +150,8 @@ namespace TGC.Group.Camara
                 LockCam = !lockCam;
             }
 
+          
+
             //Solo rotar si se esta aprentando el boton izq del mouse
             if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {

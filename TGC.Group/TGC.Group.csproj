@@ -88,9 +88,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="InventarioYObjetos\IEnums.cs" />
     <Compile Include="InventarioYObjetos\Inventory.cs" />
+    <Compile Include="InventarioYObjetos\Madera.cs" />
     <Compile Include="InventarioYObjetos\ObjectsFactory.cs" />
+    <Compile Include="InventarioYObjetos\Palmera.cs" />
+    <Compile Include="Model\Crafteable.cs" />
     <Compile Include="Model\GameModel.cs" />
+    <Compile Include="Model\Recurso.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">

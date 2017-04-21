@@ -41,7 +41,7 @@ namespace TGC.Group.Model
         //Caja que se muestra en el ejemplo.
         private TgcBox Box { get; set; }
 
-        private TgcMesh palmera;
+        private TgcMesh palmeraMesh;
 
         //Mesh de TgcLogo.
         private TgcMesh Mesh { get; set; }
@@ -54,12 +54,13 @@ namespace TGC.Group.Model
 
         private TgcTexture arenaTexture;
 
-        private List<TgcMesh> palmeras;
+        private List<Palmera> palmeras;
         private List<TgcMesh> rocas;
         private List<TgcPlane> transicionesPastoArena;
         private List<TgcMesh> arbustos;
         private List<TgcPlane> planosAgua;
         private TgcSkyBox skyBox;
+        private float MAX_DIST_A_OBJ_CONSUMIBLE = 2000f;
        
         TgcTexture transicionPastoArenaRightTexture,transicionPastoArenaDownTexture, transicionPastoArenaUpTexture, transicionPastoArenaLeftTexture;
         private const int planoTransicionPastoArenaAncho = 500;
@@ -82,7 +83,7 @@ namespace TGC.Group.Model
         {
             skyBox = new TgcSkyBox();
             skyBox.Center = new Vector3(0, 0, 0);
-            skyBox.Size = new Vector3(28000, 10000,28000);
+            skyBox.Size = new Vector3(25000, 10000,25000);
 
             var texturesPath = MediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
             //Configurar las texturas para cada una de las 6 caras
@@ -116,7 +117,7 @@ namespace TGC.Group.Model
                 loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
             var arbustoScene = loader.loadSceneFromFile(MediaDir + "\\MeshCreator\\Meshes\\Vegetacion\\Planta2\\Planta2-TgcScene.xml");
             arbusto = arbustoScene.Meshes[0];
-            palmera = palmeraScene.Meshes[0];
+            palmeraMesh = palmeraScene.Meshes[0];
 
      
 
@@ -146,7 +147,7 @@ namespace TGC.Group.Model
         //crea las instancias de las palmeras y las ubica de forma random en el espacio
         private void initPalmeras()
         {
-            palmeras = new List<TgcMesh>();        
+            palmeras = new List<Palmera>();        
             float offsetX, offsetZ;
             var random = new Random();
 
@@ -154,12 +155,13 @@ namespace TGC.Group.Model
             {
                 offsetX = random.Next(100, 29900);
                 offsetZ = random.Next(100, 29900);
-                var instance = palmera.createMeshInstance(palmera.Name + i);
+                var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);
                 instance.AutoTransformEnable = true;
                 instance.move(offsetX, 0, offsetZ);
              
                instance.Scale = new Vector3(3f, 5f, 3f);
-                palmeras.Add(instance);
+                var palmera = new Palmera(instance);
+                palmeras.Add(palmera);
             }     
         }
 
@@ -297,6 +299,37 @@ namespace TGC.Group.Model
 
         #endregion inits
 
+
+        //debe chequear si hay un objeto cercano en frente del usuario
+        public void checkearObjetoMasCercano(Vector3 position)
+        {
+            //palmera cercana?     
+            List<Palmera> palmerasABorrar = new List<Palmera>();
+           foreach(var palmera in palmeras)
+            {
+                var distancia = Vector3.Length(palmera.Position - position);
+                if (distancia <= MAX_DIST_A_OBJ_CONSUMIBLE && distancia > 0)
+                {
+                    //consumir palmera
+                   var result = palmera.consumir();
+                    if (palmera.destruirse) palmerasABorrar.Add(palmera);
+                    if(result is Madera)
+                    {
+                        //agregar madera al inventario
+                    }
+                }
+            }          
+           
+           foreach(var palmera in palmerasABorrar)
+            {
+                if (palmera.destruirse)
+                {
+                    palmera.mesh.dispose();
+                    palmeras.Remove(palmera);
+                }               
+            }
+        }
+
         /// <summary>
         ///     Se llama en cada frame.
         ///     Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones
@@ -315,11 +348,9 @@ namespace TGC.Group.Model
                 BoundingBox = !BoundingBox;
             }
 
-            //Capturar Input Mouse
-            if (Input.buttonUp(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            if (Input.keyPressed(Key.U))
             {
-                //Como ejemplo podemos hacer un movimiento simple de la cámara.
-              
+                checkearObjetoMasCercano(Camara.Position);
             }
 
             D3DDevice.Instance.Device.Transform.Projection =
@@ -344,7 +375,8 @@ namespace TGC.Group.Model
 
             //Render de BoundingBox, muy útil para debug de colisiones.
             if (BoundingBox)
-            {                
+            { 
+                             
                 //Box.BoundingBox.render();
                // Mesh.BoundingBox.render();
             }
@@ -353,15 +385,19 @@ namespace TGC.Group.Model
             
         
             //renderizado de palmeras
-            foreach (var mesh in palmeras)
+            foreach (var palmera in palmeras)
             {
-                mesh.render();
+                palmera.render();
+                if (BoundingBox)
+                    palmera.mesh.BoundingBox.render();                
             }
 
             //renderizado de rocas
             foreach  ( var mesh in rocas)
             {
                 mesh.render();
+                if (BoundingBox)
+                    mesh.BoundingBox.render();
             }
 
             planoTransicionPastoAgua.render();
@@ -374,6 +410,8 @@ namespace TGC.Group.Model
             foreach ( var mesh in arbustos)
             {
                 mesh.render();
+                if (BoundingBox)
+                    mesh.BoundingBox.render();
             }
 
             foreach( var arena in esquinasArena)
@@ -403,7 +441,7 @@ namespace TGC.Group.Model
         public override void Dispose()
         {
             suelo.dispose();
-            palmera.dispose();
+            palmeraMesh.dispose();
             rocaOriginal.dispose();
             transicionPastoArenaRightTexture.dispose();
             transicionPastoArenaDownTexture.dispose();
