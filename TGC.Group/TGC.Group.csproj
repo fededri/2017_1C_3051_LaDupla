@@ -88,6 +88,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="InventarioYObjetos\Arbusto.cs" />
+    <Compile Include="InventarioYObjetos\Fruta.cs" />
     <Compile Include="InventarioYObjetos\IEnums.cs" />
     <Compile Include="InventarioYObjetos\Inventory.cs" />
     <Compile Include="InventarioYObjetos\Madera.cs" />

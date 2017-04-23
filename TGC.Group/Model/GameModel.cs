@@ -65,7 +65,7 @@ namespace TGC.Group.Model
         private const int planoTransicionPastoArenaAncho = 500;
         private const int anchoIsla = 30000;
         private const int altoIsla = 30000;
-        private TgcMesh arbusto;
+        private TgcMesh arbustoMesh;
         private TgcTexture aguaTexture;
         private List<Crafteable> objetosABorrar;
         private List<Crafteable> objetos;
@@ -84,7 +84,7 @@ namespace TGC.Group.Model
         {
             skyBox = new TgcSkyBox();
             skyBox.Center = new Vector3(0, 0, 0);
-            skyBox.Size = new Vector3(25000, 10000,25000);
+            skyBox.Size = new Vector3(20000, 10000,20000);
 
             objetosABorrar = new List<Crafteable>();
             objetos = new List<Crafteable>();
@@ -97,7 +97,7 @@ namespace TGC.Group.Model
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "lostatseaday_rt.jpg");
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "lostatseaday_bk.jpg");
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "lostatseaday_ft.jpg");
-            skyBox.SkyEpsilon = 25f;
+            skyBox.SkyEpsilon = 20f;
             skyBox.Init();
 
             //Device de DirectX para crear primitivas.
@@ -120,7 +120,7 @@ namespace TGC.Group.Model
             var palmeraScene =
                 loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
             var arbustoScene = loader.loadSceneFromFile(MediaDir + "\\MeshCreator\\Meshes\\Vegetacion\\Planta2\\Planta2-TgcScene.xml");
-            arbusto = arbustoScene.Meshes[0];
+            arbustoMesh = arbustoScene.Meshes[0];
             palmeraMesh = palmeraScene.Meshes[0];
 
      
@@ -196,13 +196,14 @@ namespace TGC.Group.Model
             {
                 var offsetX = random.Next(1, 29900);
                 var offsetZ = random.Next(300, 29900);
-                var instance = arbusto.createMeshInstance(arbusto.Name + "i");
+                var instance = arbustoMesh.createMeshInstance(arbustoMesh.Name + "i");
                 instance.AutoTransformEnable = true;
 
                 instance.move(offsetX, 0, offsetZ);
                 if (random.Next(0, 2) == 1) { instance.Scale = new Vector3(5f, 5f, 5f); }
                 else instance.Scale = new Vector3(1f, 1f, 1f);
-                arbustos.Add(instance);
+                Arbusto arbustoObj = new Arbusto(instance);
+                objetos.Add(arbustoObj);
             }
         }
 
@@ -346,9 +347,6 @@ namespace TGC.Group.Model
                 checkearObjetoMasCercano(Camara.Position);
             }
 
-
-          
-
             updateObjetos();
 
             D3DDevice.Instance.Device.Transform.Projection =
@@ -358,6 +356,10 @@ namespace TGC.Group.Model
                   D3DDevice.Instance.ZFarPlaneDistance * 2f);
 
             skyBox.Center = Camara.Position;
+
+            GuiController.Instance.agregartiempoAtimerClima(ElapsedTime);
+
+       
 
         }
 
@@ -437,6 +439,7 @@ namespace TGC.Group.Model
             skyBox.render();
 
 
+
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();
         }
@@ -455,7 +458,7 @@ namespace TGC.Group.Model
             transicionPastoArenaDownTexture.dispose();
             transicionPastoArenaLeftTexture.dispose();
             transicionPastoArenaUpTexture.dispose();
-            arbusto.dispose();
+            arbustoMesh.dispose();
             arenaTexture.dispose();
             skyBox.dispose();
         }

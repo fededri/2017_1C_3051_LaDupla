@@ -8,22 +8,22 @@ using TGC.Group.Model;
 
 namespace TGC.Group.InventarioYObjetos
 {
-    class Roca : Crafteable
+    class Arbusto : Crafteable
     {
 
-        public override string nombreRecurso()
-        {
-            return "Piedra";
-        }
-
-        public Roca(TgcMesh mesh)
+        public Arbusto(TgcMesh mesh)
         {
             this.mesh = mesh;
         }
 
         public override Recurso dameTuRecurso()
         {
-            return new Piedra();
+            return new Fruta();
+        }
+
+        public override string nombreRecurso()
+        {
+            return "Fruta";
         }
     }
 }

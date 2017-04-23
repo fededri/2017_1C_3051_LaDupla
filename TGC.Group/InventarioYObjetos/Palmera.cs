@@ -14,11 +14,13 @@ namespace TGC.Group.InventarioYObjetos
     class Palmera : Crafteable
     {
        
+        
 
         public Palmera(TgcMesh mesh)
         {
             this.mesh = mesh;
             this.destruirse = false;
+            probabilidadObtenerRecurso = 0.2f;
         }
 
 
@@ -28,7 +30,12 @@ namespace TGC.Group.InventarioYObjetos
         }
 
 
-       public override void render()
+        public override string nombreRecurso()
+        {
+            return "Madera";
+        }
+
+        public override void render()
         {
             base.render();
             

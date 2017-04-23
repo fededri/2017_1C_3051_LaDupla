@@ -16,7 +16,7 @@ namespace TGC.Group.Model
     {
         public bool destruirse { get; set; }
         protected float probabilidadAcierto = 0.3f;
-        protected float probabilidadObtenerMadera = 0.5f;
+        protected float probabilidadObtenerRecurso = 0.5f;
         public TgcMesh mesh { get; set; }
         public Vector3 Position { get { return mesh.Position; } }
         protected TgcText2D mensaje;
@@ -25,6 +25,8 @@ namespace TGC.Group.Model
         protected float timer;
         protected Point screenCenter;
 
+
+        public abstract string nombreRecurso();
 
         public  Crafteable()
         {
@@ -51,16 +53,16 @@ namespace TGC.Group.Model
                 //el objeto se destruira, ahora decido si le doy madera o no al jugador
                 destruirse = true;
                 var prob = r.NextDouble();
-                if (prob <= probabilidadObtenerMadera)
+                if (prob <= probabilidadObtenerRecurso)
                 {
-                    GuiController.Instance.mensaje.Text = "Obtuviste Madera!";
+                    GuiController.Instance.mensaje.Text = "Obtuviste " + nombreRecurso();
                     GuiController.Instance.mensaje.Color = Color.Gold;
                     mostrarMensaje = true;
                     return dameTuRecurso();
                 }else 
                 {
                 
-                    GuiController.Instance.mensaje.Text = "No has obtenido Madera!";
+                    GuiController.Instance.mensaje.Text = "No has obtenido " + nombreRecurso();
                     GuiController.Instance.mensaje.Color = Color.Red;
                     GuiController.Instance.
                     mostrarMensaje = true;
@@ -70,7 +72,7 @@ namespace TGC.Group.Model
             }
             else
             {
-                GuiController.Instance.mensaje.Text = "Le erraste feo!";
+                GuiController.Instance.mensaje.Text = "Le erraste!";
                 GuiController.Instance.mensaje.Color = Color.BlueViolet;
                 mostrarMensaje = true;
                 //el objeto no se destruira y no devuelve madera
