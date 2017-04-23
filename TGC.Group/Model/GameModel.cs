@@ -54,13 +54,12 @@ namespace TGC.Group.Model
 
         private TgcTexture arenaTexture;
 
-        private List<Palmera> palmeras;
-        private List<TgcMesh> rocas;
+     
         private List<TgcPlane> transicionesPastoArena;
         private List<TgcMesh> arbustos;
         private List<TgcPlane> planosAgua;
         private TgcSkyBox skyBox;
-        private float MAX_DIST_A_OBJ_CONSUMIBLE = 2000f;
+        private float MAX_DIST_A_OBJ_CONSUMIBLE = 300f;
        
         TgcTexture transicionPastoArenaRightTexture,transicionPastoArenaDownTexture, transicionPastoArenaUpTexture, transicionPastoArenaLeftTexture;
         private const int planoTransicionPastoArenaAncho = 500;
@@ -68,7 +67,9 @@ namespace TGC.Group.Model
         private const int altoIsla = 30000;
         private TgcMesh arbusto;
         private TgcTexture aguaTexture;
-        LDCamaraFps cam;
+        private List<Crafteable> objetosABorrar;
+        private List<Crafteable> objetos;
+     
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -84,6 +85,9 @@ namespace TGC.Group.Model
             skyBox = new TgcSkyBox();
             skyBox.Center = new Vector3(0, 0, 0);
             skyBox.Size = new Vector3(25000, 10000,25000);
+
+            objetosABorrar = new List<Crafteable>();
+            objetos = new List<Crafteable>();
 
             var texturesPath = MediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
             //Configurar las texturas para cada una de las 6 caras
@@ -134,9 +138,6 @@ namespace TGC.Group.Model
             Vector3 posicionPersonaje = new Vector3(0, 50,0);
             ObjectsFactory factory = new ObjectsFactory(MediaDir);
             Human human = factory.createHuman(posicionPersonaje, new Vector3(2, 2, 2));
-            cam = new LDCamaraFps(human);
-            cam.alturaPreseteada = 100;
-            cam.setCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
             Input.EnableMouseSmooth = true;
             ///Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
         
@@ -147,7 +148,7 @@ namespace TGC.Group.Model
         //crea las instancias de las palmeras y las ubica de forma random en el espacio
         private void initPalmeras()
         {
-            palmeras = new List<Palmera>();        
+                  
             float offsetX, offsetZ;
             var random = new Random();
 
@@ -161,14 +162,14 @@ namespace TGC.Group.Model
              
                instance.Scale = new Vector3(3f, 5f, 3f);
                 var palmera = new Palmera(instance);
-                palmeras.Add(palmera);
+                objetos.Add(palmera);
             }     
         }
 
 
         private void initRocas()
         {
-            rocas = new List<TgcMesh>();
+            
             var random = new Random();
             for (var i = 0; i < 100; i++)
             {
@@ -179,7 +180,8 @@ namespace TGC.Group.Model
                 instance.AutoTransformEnable = true;
                 instance.move(offsetX, 0, offsetZ);
                 instance.Scale = new Vector3(5f, 2f, 5f);
-                rocas.Add(instance);
+                Roca roca = new Roca(instance);
+                objetos.Add(roca);
            
             }
 
@@ -303,31 +305,22 @@ namespace TGC.Group.Model
         //debe chequear si hay un objeto cercano en frente del usuario
         public void checkearObjetoMasCercano(Vector3 position)
         {
-            //palmera cercana?     
-            List<Palmera> palmerasABorrar = new List<Palmera>();
-           foreach(var palmera in palmeras)
+        
+           foreach(var objeto in objetos)
             {
-                var distancia = Vector3.Length(palmera.Position - position);
+                var distancia = Vector3.Length(objeto.Position - position);
                 if (distancia <= MAX_DIST_A_OBJ_CONSUMIBLE && distancia > 0)
                 {
                     //consumir palmera
-                   var result = palmera.consumir();
-                    if (palmera.destruirse) palmerasABorrar.Add(palmera);
+                   var result = objeto.consumir();
+                    if (objeto.destruirse) objetosABorrar.Add(objeto);
                     if(result is Madera)
                     {
                         //agregar madera al inventario
                     }
                 }
             }          
-           
-           foreach(var palmera in palmerasABorrar)
-            {
-                if (palmera.destruirse)
-                {
-                    palmera.mesh.dispose();
-                    palmeras.Remove(palmera);
-                }               
-            }
+            
         }
 
         /// <summary>
@@ -341,7 +334,7 @@ namespace TGC.Group.Model
 
             GuiController.Instance.ElapsedTime = ElapsedTime;
             Camara.UpdateCamera(ElapsedTime);
-
+            
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))
             {
@@ -353,6 +346,11 @@ namespace TGC.Group.Model
                 checkearObjetoMasCercano(Camara.Position);
             }
 
+
+          
+
+            updateObjetos();
+
             D3DDevice.Instance.Device.Transform.Projection =
               Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
                   D3DDevice.Instance.AspectRatio,
@@ -361,6 +359,15 @@ namespace TGC.Group.Model
 
             skyBox.Center = Camara.Position;
 
+        }
+
+
+        public void updateObjetos()
+        {
+            foreach(var objeto in objetos)
+            {
+                objeto.update();
+            }
         }
 
         /// <summary>
@@ -373,33 +380,29 @@ namespace TGC.Group.Model
             //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
             PreRender();        
 
-            //Render de BoundingBox, muy útil para debug de colisiones.
-            if (BoundingBox)
-            { 
-                             
-                //Box.BoundingBox.render();
-               // Mesh.BoundingBox.render();
-            }
-
-            suelo.render();
+         suelo.render();
             
         
-            //renderizado de palmeras
-            foreach (var palmera in palmeras)
+            //renderizado de objetos
+            foreach (var objeto in objetos)
             {
-                palmera.render();
+                objeto.render();
                 if (BoundingBox)
-                    palmera.mesh.BoundingBox.render();                
-            }
+                    objeto.mesh.BoundingBox.render();
+        
+           }
 
-            //renderizado de rocas
-            foreach  ( var mesh in rocas)
+            //borrado de objetos
+            foreach (var crafteable in objetosABorrar)
             {
-                mesh.render();
-                if (BoundingBox)
-                    mesh.BoundingBox.render();
+                if (crafteable.destruirse)
+                {
+                    objetos.Remove(crafteable);
+                }
             }
+            objetosABorrar.Clear();
 
+        
             planoTransicionPastoAgua.render();
 
             foreach ( var mesh in transicionesPastoArena)
@@ -424,10 +427,15 @@ namespace TGC.Group.Model
                 plano.render();
             }
 
+            if (GuiController.Instance.mostrarMensaje && GuiController.Instance.timerMensaje < 0.8)
+            {
+                GuiController.Instance.mensaje.render();
+                GuiController.Instance.timerMensaje += ElapsedTime;
+                
+            }
+
             skyBox.render();
 
-            cam.Enable = true;
-            cam.setPosition(new Vector3(cam.Position.X,cam.alturaPreseteada, cam.Position.Y));
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();

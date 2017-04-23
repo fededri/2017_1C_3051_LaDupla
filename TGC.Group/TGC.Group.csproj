@@ -93,6 +93,8 @@
     <Compile Include="InventarioYObjetos\Madera.cs" />
     <Compile Include="InventarioYObjetos\ObjectsFactory.cs" />
     <Compile Include="InventarioYObjetos\Palmera.cs" />
+    <Compile Include="InventarioYObjetos\Piedra.cs" />
+    <Compile Include="InventarioYObjetos\Roca.cs" />
     <Compile Include="Model\Crafteable.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\Recurso.cs" />
