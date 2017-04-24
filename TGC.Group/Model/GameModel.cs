@@ -14,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using TGC.Core.Terrain;
 using TGC.Group.InventarioYObjetos;
+using TGC.Core.BoundingVolumes;
+using TGC.Core.Collision;
 
 namespace TGC.Group.Model
 {
@@ -69,7 +71,8 @@ namespace TGC.Group.Model
         private TgcTexture aguaTexture;
         private List<Crafteable> objetosABorrar;
         private List<Crafteable> objetos;
-     
+        private TgcFpsCamera cam;
+
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -132,13 +135,10 @@ namespace TGC.Group.Model
             initTransicionPastoArena();
             initArbustos();
             initAgua();
-            Camara = new TgcFpsCamera(new Vector3(0, 100f, 0), Input);
+            cam = new TgcFpsCamera(new Vector3(0, 100f, 0), Input);
+            Camara = cam;
 
-            GuiController.Instance.D3dInput = Input;
-            Vector3 posicionPersonaje = new Vector3(0, 50,0);
-            ObjectsFactory factory = new ObjectsFactory(MediaDir);
-            Human human = factory.createHuman(posicionPersonaje, new Vector3(2, 2, 2));
-            Input.EnableMouseSmooth = true;
+            GuiController.Instance.D3dInput = Input;           
             ///Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
         
 
@@ -161,7 +161,10 @@ namespace TGC.Group.Model
                 instance.move(offsetX, 0, offsetZ);
              
                instance.Scale = new Vector3(3f, 5f, 3f);
+                var collisionableCylinder = new TgcBoundingCylinder(new Vector3(offsetX,0,offsetZ),50,800);
+                collisionableCylinder.setRenderColor(Color.Green);
                 var palmera = new Palmera(instance);
+                palmera.cilindro = collisionableCylinder;
                 objetos.Add(palmera);
             }     
         }
@@ -289,13 +292,7 @@ namespace TGC.Group.Model
             arena = new TgcPlane(new Vector3(anchoIsla, 0,- altoTransicionPastoArena), new Vector3(200, 0, 120), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
             esquinasArena.Add(arena);
 
-            /* int startZPosition = 0;
-             while ((startZPosition + planoTransicionPastoArenaAncho) < 5000)
-             {
-                 var plane = new TgcPlane(new Vector3(startXPosition, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane, transicionPastoArenaUpTexture, 1f, 1f);
-                 transicionesPastoArena.Add(plane);
-                 startZPosition += planoTransicionPastoArenaAncho;
-             }*/
+        
 
 
         }
@@ -334,7 +331,7 @@ namespace TGC.Group.Model
             PreUpdate();
 
             GuiController.Instance.ElapsedTime = ElapsedTime;
-            Camara.UpdateCamera(ElapsedTime);
+            
             
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))
@@ -358,10 +355,36 @@ namespace TGC.Group.Model
             skyBox.Center = Camara.Position;
 
             GuiController.Instance.agregartiempoAtimerClima(ElapsedTime);
+          
+            cam.oldPosition = Camara.Position;
+            
+            Camara.UpdateCamera(ElapsedTime);
 
-       
+            
+            foreach (var obj in objetos)
+            {
+                if(obj.cilindro != null)
+                {
+                  
+                    if (TgcCollisionUtils.testPointCylinder(Camara.Position, obj.cilindro))
+                    {
+                        obj.cilindro.setRenderColor(Color.Blue);
+                        cam.colision = true;
+                        break;    
+                       
+                    }
+                    else obj.cilindro.setRenderColor(Color.Gold);
+                }
+            }          
+            Camara.UpdateCamera(ElapsedTime);
+           
+           
+
+
+
 
         }
+
 
 
         public void updateObjetos()

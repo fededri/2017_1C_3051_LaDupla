@@ -21,6 +21,7 @@ namespace TGC.Group.Camara
         int tarde = 1;
         int noche = 2;
         public int horarioActual { get; set; }
+        public bool bloquearAvance { get; set; }
 
         //agrgar time segundos a timerClima
         public void agregartiempoAtimerClima(float time)
