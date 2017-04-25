@@ -16,6 +16,7 @@ using TGC.Core.Terrain;
 using TGC.Group.InventarioYObjetos;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Model
 {
@@ -72,6 +73,7 @@ namespace TGC.Group.Model
         private List<Crafteable> objetosABorrar;
         private List<Crafteable> objetos;
         private TgcFpsCamera cam;
+        private Hud.Hud hud;
 
 
         //Boleano para ver si dibujamos el boundingbox
@@ -88,9 +90,10 @@ namespace TGC.Group.Model
             skyBox = new TgcSkyBox();
             skyBox.Center = new Vector3(0, 0, 0);
             skyBox.Size = new Vector3(20000, 10000,20000);
+            hud = new Hud.Hud(MediaDir + "Hud\\");
 
             objetosABorrar = new List<Crafteable>();
-            objetos = new List<Crafteable>();
+            objetos = new List<Crafteable>();          
 
             var texturesPath = MediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
             //Configurar las texturas para cada una de las 6 caras
@@ -417,6 +420,7 @@ namespace TGC.Group.Model
             PreRender();        
 
          suelo.render();
+            hud.render();
             
         
             //renderizado de objetos
@@ -495,6 +499,7 @@ namespace TGC.Group.Model
             arbustoMesh.dispose();
             arenaTexture.dispose();
             skyBox.dispose();
+            hud.dispose();
         }
     }
 }
