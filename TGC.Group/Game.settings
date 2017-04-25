@@ -9,7 +9,7 @@
       <Value Profile="(Default)">Grupo LA_DUPLA</Value>
     </Setting>
     <Setting Name="Description" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Survival Craft - Escenarios de sobrevivencia</Value>
+      <Value Profile="(Default)">Survival Craft - Escape de la isla</Value>
     </Setting>
     <Setting Name="ShadersDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)">..\..\Shaders\</Value>

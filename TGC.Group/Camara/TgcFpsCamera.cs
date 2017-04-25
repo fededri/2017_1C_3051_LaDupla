@@ -40,8 +40,8 @@ namespace TGC.Group.Camara
             mouseCenter = new Point(
                 D3DDevice.Instance.Device.Viewport.Width / 2,
                 D3DDevice.Instance.Device.Viewport.Height / 2);
-            RotationSpeed = 0.1f;
-           // RotationSpeed = 0.001f; // PARA LA MACBOOK
+           // RotationSpeed = 0.1f;
+           RotationSpeed = 0.001f; // PARA LA MACBOOK
             MovementSpeed = 500f;
             JumpSpeed = 500f;
             directionView = new Vector3(0, 0, -1);
