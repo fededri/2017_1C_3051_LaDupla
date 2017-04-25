@@ -23,6 +23,7 @@ namespace TGC.Group.Camara
         public int horarioActual { get; set; }
         public bool bloquearAvance { get; set; }
 
+
         //agrgar time segundos a timerClima
         public void agregartiempoAtimerClima(float time)
         {
