@@ -26,7 +26,7 @@ namespace TGC.Group.Model
         protected float timer;
         protected Point screenCenter;
         public TgcBoundingCylinder cilindro { get; set; }
-
+        public TgcBoundingSphere esfera { get; set; }
 
         public abstract string nombreRecurso();
 
@@ -97,10 +97,8 @@ namespace TGC.Group.Model
         public virtual void render()
         {
             mesh.render();
-
-            if(cilindro != null)
-            cilindro.render();
-
+          
+        
         }
 
        public abstract Recurso dameTuRecurso();

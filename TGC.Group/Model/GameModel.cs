@@ -161,7 +161,7 @@ namespace TGC.Group.Model
                 instance.move(offsetX, 0, offsetZ);
              
                instance.Scale = new Vector3(3f, 5f, 3f);
-                var collisionableCylinder = new TgcBoundingCylinder(new Vector3(offsetX,0,offsetZ),50,800);
+                var collisionableCylinder = new TgcBoundingCylinder(new Vector3(offsetX,0,offsetZ),60,800);
                 collisionableCylinder.setRenderColor(Color.Green);
                 var palmera = new Palmera(instance);
                 palmera.cilindro = collisionableCylinder;
@@ -183,7 +183,10 @@ namespace TGC.Group.Model
                 instance.AutoTransformEnable = true;
                 instance.move(offsetX, 0, offsetZ);
                 instance.Scale = new Vector3(5f, 2f, 5f);
+                var esfera = new TgcBoundingSphere(new Vector3(offsetX,0,offsetZ), 120);
+                    
                 Roca roca = new Roca(instance);
+                roca.esfera = esfera;
                 objetos.Add(roca);
            
             }
@@ -203,10 +206,19 @@ namespace TGC.Group.Model
                 instance.AutoTransformEnable = true;
 
                 instance.move(offsetX, 0, offsetZ);
-                if (random.Next(0, 2) == 1) { instance.Scale = new Vector3(5f, 5f, 5f); }
-                else instance.Scale = new Vector3(1f, 1f, 1f);
-                Arbusto arbustoObj = new Arbusto(instance);
-                objetos.Add(arbustoObj);
+                if (random.Next(0, 2) == 1)
+                {
+                    instance.Scale = new Vector3(5f, 5f, 5f);                
+                    Arbusto arbustoObj = new Arbusto(instance);
+                    objetos.Add(arbustoObj);
+                }
+                else
+                {
+                    instance.Scale = new Vector3(1f, 1f, 1f);
+                    Arbusto arbustoObj = new Arbusto(instance);
+                    objetos.Add(arbustoObj);
+                }
+               
             }
         }
 
@@ -356,9 +368,7 @@ namespace TGC.Group.Model
 
             GuiController.Instance.agregartiempoAtimerClima(ElapsedTime);
           
-            cam.oldPosition = Camara.Position;
-            
-            Camara.UpdateCamera(ElapsedTime);
+           
 
             
             foreach (var obj in objetos)
@@ -368,21 +378,22 @@ namespace TGC.Group.Model
                   
                     if (TgcCollisionUtils.testPointCylinder(Camara.Position, obj.cilindro))
                     {
-                        obj.cilindro.setRenderColor(Color.Blue);
-                        cam.colision = true;
-                        break;    
-                       
+                       obj.cilindro.setRenderColor(Color.Blue);
+                        cam.colision = true; 
+               
                     }
-                    else obj.cilindro.setRenderColor(Color.Gold);
+                } else if(obj.esfera != null)
+                {
+                    if (TgcCollisionUtils.testPointSphere(obj.esfera, Camara.Position))
+                    {
+                        cam.colision = true;
+                        break;
+                    
+                    }
                 }
             }          
             Camara.UpdateCamera(ElapsedTime);
            
-           
-
-
-
-
         }
 
 
