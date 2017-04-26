@@ -336,10 +336,8 @@ namespace TGC.Group.Model
                     {
                         //agrego objeto al personaje si tiene espacio
                         if (!inventarioLleno)
-                            personaje.agregarRecurso(result);
-                       
-                        
-                        
+                            personaje.agregarRecurso(result);                   
+                                               
                     }
                 }
             }          
@@ -375,15 +373,31 @@ namespace TGC.Group.Model
               Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
                   D3DDevice.Instance.AspectRatio,
                   D3DDevice.Instance.ZNearPlaneDistance,
-                  D3DDevice.Instance.ZFarPlaneDistance * 2f);
+                  D3DDevice.Instance.ZFarPlaneDistance *2f);
 
-            skyBox.Center = Camara.Position;
+            skyBox.Center = cam.positionEye;
 
             GuiController.Instance.agregartiempoAtimerClima(ElapsedTime);
-          
-           
 
-            
+            switch (GuiController.Instance.horarioActual)
+            {
+                case 0:
+                    skyBox.Color = Color.Cyan;
+                   // skyBox.Init();
+                    break;
+
+                case 1:
+
+                    skyBox.Color = Color.OrangeRed;
+                   // skyBox.Init();
+                    break;
+
+                case 2:
+                    skyBox.Color = Color.DarkTurquoise;
+                   // skyBox.Init();
+                    break;
+            }
+                     
             foreach (var obj in objetos)
             {
                 if(obj.cilindro != null)

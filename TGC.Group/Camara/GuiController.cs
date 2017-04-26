@@ -28,7 +28,7 @@ namespace TGC.Group.Camara
         public void agregartiempoAtimerClima(float time)
         {
             timerClima += time;
-            if(timerClima >= (10)) // 5 minutos
+            if(timerClima >= (5)) // 5 minutos
             {
                 if (horarioActual == noche) horarioActual = maniana;
                 else horarioActual += 1;

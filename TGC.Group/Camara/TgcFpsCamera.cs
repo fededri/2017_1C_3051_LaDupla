@@ -29,7 +29,8 @@ namespace TGC.Group.Camara
         private float updownRot;
         public Vector3 oldPosition { get; set; }
         private bool lockCam;
-        private Vector3 positionEye;
+
+        public Vector3 positionEye;
         private float DEFAULT_HEIGHT = 100f;
         public bool colision { get; set; }
         public Vector3 lastMoveVector { get; set; }
