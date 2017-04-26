@@ -330,6 +330,7 @@ namespace TGC.Group.Model
                     if(result is Madera)
                     {
                         //agregar madera al inventario
+
                     }
                 }
             }          

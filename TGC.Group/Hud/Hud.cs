@@ -8,6 +8,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Text;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using TGC.Group.Model;
 
 namespace TGC.Group.Hud
 {
@@ -22,10 +23,13 @@ namespace TGC.Group.Hud
         Drawer2D drawer2D;
         List<CustomSprite> inventario;
         D3DDevice device;
+        List<CustomSprite> items;
+        String directorio;
         
 
         public Hud(String HudDir)
         {
+            directorio = HudDir;
             vida = new TgcText2D();
             agua = new TgcText2D();
             energia = new TgcText2D();
@@ -33,7 +37,7 @@ namespace TGC.Group.Hud
             hambre = new TgcText2D();
             inventarioString = new TgcText2D();
             inventario = new List<CustomSprite>();
-
+            items = new List<CustomSprite>();
 
 
             device = D3DDevice.Instance;
@@ -81,6 +85,12 @@ namespace TGC.Group.Hud
             inventario.Add(item5);
             inventario.Add(item6);
 
+            CustomSprite itemSprite = new CustomSprite();
+            itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
+            itemSprite.Position = item1.Position;
+            itemSprite.Scaling = new Vector2(1.5f, 1.5f);
+            items.Add(itemSprite);
+
             //textos
             Size tamanioTexto = new Size(200, 10);
             vida.Size = tamanioTexto;
@@ -121,6 +131,16 @@ namespace TGC.Group.Hud
         }
 
 
+        public void agregarItem(Recurso item)
+        {
+            
+            CustomSprite itemSprite = new CustomSprite();
+            CustomSprite slotInventario =  inventario.ElementAt(0);
+            itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
+            itemSprite.Position = slotInventario.Position;
+            items.Add(itemSprite);
+        }
+
         public void render()
         {
             drawer2D.BeginDrawSprite();
@@ -131,6 +151,11 @@ namespace TGC.Group.Hud
             hambre.render();
             inventarioString.render();
             foreach(var item  in inventario)
+            {
+                drawer2D.DrawSprite(item);
+            }
+
+            foreach ( var item in items)
             {
                 drawer2D.DrawSprite(item);
             }
