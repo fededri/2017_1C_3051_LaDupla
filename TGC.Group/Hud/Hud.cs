@@ -23,14 +23,13 @@ namespace TGC.Group.Hud
         TgcText2D inventarioString;
         CustomSprite hudSprite;
         Drawer2D drawer2D;
-        List<ItemContainer> itemsContainerSprite;
+        public List<ItemContainer> itemsContainerSprite { get; }
         D3DDevice device;
-        List<CustomSprite> items; 
+        public List<Item> items { get; }
         String directorio;
         public TgcText2D mensaje { get; set; }
-
-
-      
+        private const int maxItemsPorSlot = 2;
+             
 
         public Hud(String HudDir)
         {
@@ -42,7 +41,7 @@ namespace TGC.Group.Hud
             hambre = new TgcText2D();
             inventarioString = new TgcText2D();
             itemsContainerSprite = new List<ItemContainer>();
-            items = new List<CustomSprite>();
+            items = new List<Item>();
             mensaje = new TgcText2D();
             mensaje.Position = new Point(D3DDevice.Instance.Width / 2, 10);
             mensaje.changeFont(new System.Drawing.Font("ComicSands", 12, FontStyle.Bold));
@@ -125,43 +124,60 @@ namespace TGC.Group.Hud
             throw new Exception("NO hay ningun item container disponible");
         }
 
-        public void agregarItem(Recurso item)
-        {            
-            CustomSprite itemSprite = new CustomSprite();
-            ItemContainer itemContainer = getPrimerItemContainerLibre();
-            itemContainer.estaDisponible = false;
-
-            TiposRecursos tipo = item.tipo;
-            switch (tipo)
+        public ItemContainer getItemContainer(Recurso item)
+        {
+            foreach(var container in itemsContainerSprite)
             {
-                case TiposRecursos.Madera:
-                    itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
-                    break;
+               if(!container.estaDisponible && container.tipoRecurso == item.tipo)
+                {
+                    var cantidad = cuantosObjetosDeEsteTipoHay(item.tipo);
+                        if(cantidad >= maxItemsPorSlot)
+                    {
+                        GuiController.Instance.mensaje.Text = "No hay mas espacio para este recurso";
+                        return null;
+                    }else
+                    {
+                        return container;
+                    }
+                }
+            }
+            //si el recurso no lo tiene el jugador entonces busco el primer slot libre
+            return  getPrimerItemContainerLibre();
+        }
 
-                case TiposRecursos.Piedra:
-                    itemSprite.Bitmap = new CustomBitmap(directorio + "roca.png", D3DDevice.Instance.Device);
-                    break;
+        public int cuantosObjetosDeEsteTipoHay(TiposRecursos tipo)
+        {
+           if (items.Count == 0) return 0;
+           foreach(var itemContainer in itemsContainerSprite)
+            {
+                if (itemContainer.tipoRecurso == tipo)
+                {
+                    return itemContainer.cantidad;
+                }
+            }
+            return 0;
+        }
 
-                case TiposRecursos.Comida:
-                    itemSprite.Bitmap = new CustomBitmap(directorio + "cherries.png", D3DDevice.Instance.Device);
-                    break;
+        public void agregarItem(Recurso recurso)
+        {
 
-                case TiposRecursos.Bebida:
+            ItemContainer itemContainer = getItemContainer(recurso);
+            if (itemContainer == null) return;
+            Item item = new Item(recurso, directorio, itemContainer);
+            itemContainer.tipoRecurso = recurso.tipo;
+            itemContainer.cantidad++;
+            if (itemContainer.estaDisponible)
+            {
+                itemContainer.estaDisponible = false;
 
-                    break;
-
-                case TiposRecursos.Encendedor:
-
-                    break;
-
-                default:
-                    itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
-                    break;
-            }           
-            itemSprite.Scaling = new Vector2(1.5f, 1.5f);
-            itemSprite.Position = new Vector2(itemContainer.sprite.Position.X + 10,
-                                            itemContainer.sprite.Position.Y + 10);
-            items.Add(itemSprite);
+            }
+            else
+            {
+                //aumentar el contador de cantidad de items
+            }
+       
+           
+            items.Add(item);
         }
 
         public void render()
@@ -176,11 +192,13 @@ namespace TGC.Group.Hud
             foreach(var item  in itemsContainerSprite)
             {
                 drawer2D.DrawSprite(item.sprite);
+                item.textoContador.render();
             }
 
             foreach ( var item in items)
             {
-                drawer2D.DrawSprite(item);
+                drawer2D.DrawSprite(item.itemSprite);
+                
             }
             drawer2D.EndDrawSprite();
          
@@ -201,7 +219,7 @@ namespace TGC.Group.Hud
 
             foreach (var item in items)
             {
-                item.Dispose();
+                item.itemSprite.Dispose();
             }
             mensaje.Dispose();
             hudSprite.Dispose();

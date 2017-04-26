@@ -131,7 +131,9 @@ namespace TGC.Group.Model
             arbustoMesh = arbustoScene.Meshes[0];
             palmeraMesh = palmeraScene.Meshes[0];
 
-     
+            var botellaAgua = new Botella() ;
+            botellaAgua.tieneAgua = false;
+            personaje.agregarRecurso(botellaAgua);     
 
             var rocaScene = loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Roca\\Roca-TgcScene.xml");
             rocaOriginal = rocaScene.Meshes[0];

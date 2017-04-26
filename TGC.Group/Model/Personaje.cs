@@ -24,12 +24,19 @@ namespace TGC.Group.Model
 
         public bool inventarioLleno()
         {
-            return recursos.Count()>=6;
+            var contadorSlotsLlenos = 0;
+            foreach(var container in hud.itemsContainerSprite)
+            {
+                if (!container.estaDisponible) contadorSlotsLlenos++;
+            }
+
+            return contadorSlotsLlenos >= 6;
+
         }
 
         public void agregarRecurso(Recurso recurso)
         {
-            if (recursos.Count() >= 6) throw new Exception("Se quiso agregar un recurso pero el inventario esta lleno");
+            if (inventarioLleno()) throw new Exception("Se quiso agregar un recurso pero el inventario esta lleno");
             recursos.Add(recurso);
             hud.agregarItem(recurso);
         }
