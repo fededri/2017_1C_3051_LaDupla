@@ -74,6 +74,7 @@ namespace TGC.Group.Model
         private List<Crafteable> objetos;
         private TgcFpsCamera cam;
         private Hud.Hud hud;
+        private Personaje personaje;
 
 
         //Boleano para ver si dibujamos el boundingbox
@@ -91,6 +92,7 @@ namespace TGC.Group.Model
             skyBox.Center = new Vector3(0, 0, 0);
             skyBox.Size = new Vector3(20000, 10000,20000);
             hud = new Hud.Hud(MediaDir + "Hud\\");
+            personaje = new Personaje(hud);
 
             objetosABorrar = new List<Crafteable>();
             objetos = new List<Crafteable>();          
@@ -327,10 +329,18 @@ namespace TGC.Group.Model
                     //consumir palmera
                    var result = objeto.consumir();
                     if (objeto.destruirse) objetosABorrar.Add(objeto);
-                    if(result is Madera)
+                    if(result !=null)
                     {
-                        //agregar madera al inventario
-
+                        //agrego objeto al personaje si tiene espacio
+                        if (!personaje.inventarioLleno())
+                            personaje.agregarRecurso(result);
+                        else
+                        {
+                            hud.mensaje.Text = "Inventario Lleno!";
+                            hud.mostrarMensaje = true;
+                        }
+                        
+                        
                     }
                 }
             }          

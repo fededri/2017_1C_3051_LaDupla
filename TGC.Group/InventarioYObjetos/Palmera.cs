@@ -20,7 +20,6 @@ namespace TGC.Group.InventarioYObjetos
         {
             this.mesh = mesh;
             this.destruirse = false;
-            probabilidadObtenerRecurso = 0.2f;
         }
 
 

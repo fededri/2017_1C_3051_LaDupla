@@ -9,6 +9,7 @@ using TGC.Core.Text;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TGC.Group.Model;
+using TGC.Group.InventarioYObjetos;
 
 namespace TGC.Group.Hud
 {
@@ -21,11 +22,14 @@ namespace TGC.Group.Hud
         TgcText2D inventarioString;
         CustomSprite hudSprite;
         Drawer2D drawer2D;
-        List<CustomSprite> inventario;
+        List<ItemContainer> itemsContainerSprite;
         D3DDevice device;
-        List<CustomSprite> items;
+        List<CustomSprite> items; 
         String directorio;
-        
+        public TgcText2D mensaje { get; set; }
+        public bool mostrarMensaje { get; set; }
+
+      
 
         public Hud(String HudDir)
         {
@@ -36,9 +40,13 @@ namespace TGC.Group.Hud
             drawer2D = new Drawer2D();
             hambre = new TgcText2D();
             inventarioString = new TgcText2D();
-            inventario = new List<CustomSprite>();
+            itemsContainerSprite = new List<ItemContainer>();
             items = new List<CustomSprite>();
-
+            mensaje = new TgcText2D();
+            mensaje.Position = new Point(D3DDevice.Instance.Width / 2, 10);
+            mensaje.changeFont(new System.Drawing.Font("ComicSands", 12, FontStyle.Bold));
+            mensaje.Color = Color.White;
+            mensaje.Size = new Size(200,10);
 
             device = D3DDevice.Instance;
 
@@ -48,48 +56,22 @@ namespace TGC.Group.Hud
             var textureSize = new Size(30, 30);
             hudSprite.Scaling = new Vector2(0.5f, 0.5f);
             hudSprite.Position = new Vector2(10, 20);
+      
+            ItemContainer item1 = new ItemContainer(HudDir, 1);
+            ItemContainer item2 = new ItemContainer(HudDir, 2);
+            ItemContainer item3 = new ItemContainer(HudDir, 3);
+            ItemContainer item4 = new ItemContainer(HudDir, 4);
+            ItemContainer item5 = new ItemContainer(HudDir, 5);
+            ItemContainer item6 = new ItemContainer(HudDir, 6);
 
+            itemsContainerSprite.Add(item1);
+            itemsContainerSprite.Add(item2);
+            itemsContainerSprite.Add(item3);
+            itemsContainerSprite.Add(item4);
+            itemsContainerSprite.Add(item5);
+            itemsContainerSprite.Add(item6);
 
-            //items
-            //primera fila
-            CustomSprite item1 = new CustomSprite();
-            item1.Bitmap = new CustomBitmap(HudDir + "inv_item.png", device.Device);
-            item1.Position = new Vector2(device.Width - ((item1.Bitmap.Width*2)+40),device.Height - (item1.Bitmap.Height+40));
-
-            CustomSprite item2 = new CustomSprite();
-            item2.Bitmap = new CustomBitmap(HudDir + "inv_item.png", device.Device);
-            item2.Position = new Vector2(device.Width - (item2.Bitmap.Width + 20), device.Height - (item2.Bitmap.Height+40));
-
-            //segunda fila
-            CustomSprite item3 = new CustomSprite();
-            item3.Bitmap = new CustomBitmap(HudDir + "inv_item.png", device.Device);
-            item3.Position = new Vector2(device.Width - (item3.Bitmap.Width + 20), device.Height - (item3.Bitmap.Height*2 + 60));
-
-            CustomSprite item4 = new CustomSprite();
-            item4.Bitmap = new CustomBitmap(HudDir + "inv_item.png", device.Device);
-            item4.Position = new Vector2(device.Width - (item4.Bitmap.Width*2 + 40), device.Height - (item4.Bitmap.Height*2 + 60));
-
-            //tercera fila
-            CustomSprite item5 = new CustomSprite();
-            item5.Bitmap = new CustomBitmap(HudDir + "inv_item.png", device.Device);
-            item5.Position = new Vector2(device.Width - (item5.Bitmap.Width*2 + 40), device.Height - (item5.Bitmap.Height*3 + 80));
-
-            CustomSprite item6 = new CustomSprite();
-            item6.Bitmap = new CustomBitmap(HudDir + "inv_item.png", device.Device);
-            item6.Position = new Vector2(device.Width - (item6.Bitmap.Width + 20), device.Height - (item6.Bitmap.Height * 3 + 80));
-
-            inventario.Add(item1);
-            inventario.Add(item2);
-            inventario.Add(item3);
-            inventario.Add(item4);
-            inventario.Add(item5);
-            inventario.Add(item6);
-
-            CustomSprite itemSprite = new CustomSprite();
-            itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
-            itemSprite.Position = item1.Position;
-            itemSprite.Scaling = new Vector2(1.5f, 1.5f);
-            items.Add(itemSprite);
+        
 
             //textos
             Size tamanioTexto = new Size(200, 10);
@@ -125,19 +107,31 @@ namespace TGC.Group.Hud
             inventarioString.Color = Color.White;
             inventarioString.Align = TgcText2D.TextAlign.CENTER;
             inventarioString.Text = "Inventario";
-            inventarioString.Position = new Point((int)item5.Position.X - 10,(int) item6.Position.Y - 40);
+            inventarioString.Position = new Point((int)itemsContainerSprite.ElementAt(4).sprite.Position.X - 20,(int)itemsContainerSprite.ElementAt(5).sprite.Position.Y - 40);
             inventarioString.changeFont(new System.Drawing.Font("ComicSands", 12, FontStyle.Bold));
 
         }
 
+        public ItemContainer getPrimerItemContainerLibre()
+        {
+            foreach ( var item in itemsContainerSprite)
+            {
+                if (item.estaDisponible)
+                {
+                    return item;
+                }
+            }
+            throw new Exception("NO hay ningun item container disponible");
+        }
 
         public void agregarItem(Recurso item)
-        {
-            
+        {            
             CustomSprite itemSprite = new CustomSprite();
-            CustomSprite slotInventario =  inventario.ElementAt(0);
+            ItemContainer itemContainer = getPrimerItemContainerLibre();
+            itemContainer.estaDisponible = false;
+            //TODO elegir que grafico renderizar
             itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
-            itemSprite.Position = slotInventario.Position;
+            itemSprite.Position = itemContainer.sprite.Position;
             items.Add(itemSprite);
         }
 
@@ -150,9 +144,9 @@ namespace TGC.Group.Hud
             agua.render();
             hambre.render();
             inventarioString.render();
-            foreach(var item  in inventario)
+            foreach(var item  in itemsContainerSprite)
             {
-                drawer2D.DrawSprite(item);
+                drawer2D.DrawSprite(item.sprite);
             }
 
             foreach ( var item in items)
@@ -160,13 +154,32 @@ namespace TGC.Group.Hud
                 drawer2D.DrawSprite(item);
             }
             drawer2D.EndDrawSprite();
+            if (mostrarMensaje)
+            {
+                mostrarMensaje = false;
+                mensaje.render();
+            }
+
         }
+
 
         public void dispose()
         {
+            vida.Dispose();
+            agua.Dispose();
+            energia.Dispose();
+            hambre.Dispose();
+            foreach (var item in itemsContainerSprite)
+            {
+                item.sprite.Dispose();
+            }
+
+            foreach (var item in items)
+            {
+                item.Dispose();
+            }
+            mensaje.Dispose();
             hudSprite.Dispose();
-
         }
-
     }
 }
