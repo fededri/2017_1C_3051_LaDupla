@@ -19,6 +19,7 @@ namespace TGC.Group.InventarioYObjetos
         public Roca(TgcMesh mesh)
         {
             this.mesh = mesh;
+            
         }
 
         public override Recurso dameTuRecurso()

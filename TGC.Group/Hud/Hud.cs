@@ -28,8 +28,7 @@ namespace TGC.Group.Hud
         List<CustomSprite> items; 
         String directorio;
         public TgcText2D mensaje { get; set; }
-        public bool mostrarMensaje { get; set; }
-        public float mensajeTimer { get; set; }
+
 
       
 
@@ -114,12 +113,6 @@ namespace TGC.Group.Hud
 
         }
 
-
-        public void update()
-        {
-            mensajeTimer += GuiController.Instance.ElapsedTime;
-        }
-
         public ItemContainer getPrimerItemContainerLibre()
         {
             foreach ( var item in itemsContainerSprite)
@@ -137,9 +130,37 @@ namespace TGC.Group.Hud
             CustomSprite itemSprite = new CustomSprite();
             ItemContainer itemContainer = getPrimerItemContainerLibre();
             itemContainer.estaDisponible = false;
-            //TODO elegir que grafico renderizar
-            itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
-            itemSprite.Position = itemContainer.sprite.Position;
+
+            TiposRecursos tipo = item.tipo;
+            switch (tipo)
+            {
+                case TiposRecursos.Madera:
+                    itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
+                    break;
+
+                case TiposRecursos.Piedra:
+                    itemSprite.Bitmap = new CustomBitmap(directorio + "roca.png", D3DDevice.Instance.Device);
+                    break;
+
+                case TiposRecursos.Comida:
+                    itemSprite.Bitmap = new CustomBitmap(directorio + "cherries.png", D3DDevice.Instance.Device);
+                    break;
+
+                case TiposRecursos.Bebida:
+
+                    break;
+
+                case TiposRecursos.Encendedor:
+
+                    break;
+
+                default:
+                    itemSprite.Bitmap = new CustomBitmap(directorio + "wood.png", D3DDevice.Instance.Device);
+                    break;
+            }           
+            itemSprite.Scaling = new Vector2(1.5f, 1.5f);
+            itemSprite.Position = new Vector2(itemContainer.sprite.Position.X + 10,
+                                            itemContainer.sprite.Position.Y + 10);
             items.Add(itemSprite);
         }
 
@@ -162,11 +183,7 @@ namespace TGC.Group.Hud
                 drawer2D.DrawSprite(item);
             }
             drawer2D.EndDrawSprite();
-            if (mostrarMensaje && mensajeTimer >= 2)
-            {
-                mostrarMensaje = false;
-                mensaje.render();
-            }
+         
 
         }
 

@@ -60,8 +60,9 @@ namespace TGC.Group.Camara
                 {
                     instance = new GuiController();
                     instance.mensaje = new TgcText2D();
+                    instance.mensaje.Align = TgcText2D.TextAlign.LEFT;
                     instance.mensaje.Color = Color.BlueViolet;
-                    instance.mensaje.Position = new Point(500, 500);
+                    instance.mensaje.Position = new Point(D3DDevice.Instance.Width /2, D3DDevice.Instance.Height /2);
                     instance.mensaje.Size = new Size(500, 200);
                     instance.mensaje.changeFont(new Font("TimesNewRoman", 25, FontStyle.Bold | FontStyle.Italic));
                 }

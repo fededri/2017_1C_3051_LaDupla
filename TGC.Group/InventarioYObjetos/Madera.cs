@@ -14,6 +14,7 @@ namespace TGC.Group.InventarioYObjetos
         public Madera()
         {
             descripcion = "Madera obtenida de un arbol, permite crear fogatas y barcas";
+            tipo = TiposRecursos.Madera;
         }
 
         public override bool combinable(Recurso otroRecurso)

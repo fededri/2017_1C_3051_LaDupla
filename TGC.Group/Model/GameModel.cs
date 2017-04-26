@@ -327,19 +327,15 @@ namespace TGC.Group.Model
                 if (distancia <= MAX_DIST_A_OBJ_CONSUMIBLE && distancia > 0)
                 {
                     //consumir palmera
-                   var result = objeto.consumir();
+                    bool inventarioLleno = personaje.inventarioLleno();
+                   var result = objeto.consumir(inventarioLleno);
                     if (objeto.destruirse) objetosABorrar.Add(objeto);
                     if(result !=null)
                     {
                         //agrego objeto al personaje si tiene espacio
-                        if (!personaje.inventarioLleno())
+                        if (!inventarioLleno)
                             personaje.agregarRecurso(result);
-                        else
-                        {
-                            hud.mensaje.Text = "Inventario Lleno!";
-                            hud.mensajeTimer = 0;
-                            hud.mostrarMensaje = true;
-                        }
+                       
                         
                         
                     }
@@ -358,7 +354,7 @@ namespace TGC.Group.Model
             PreUpdate();
 
             GuiController.Instance.ElapsedTime = ElapsedTime;
-            hud.update();
+          
             
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))

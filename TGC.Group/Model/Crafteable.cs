@@ -38,7 +38,7 @@ namespace TGC.Group.Model
         }
 
 
-        public Recurso consumir()
+        public Recurso consumir(bool inventarioLleno)
         {
             if(timer < 0.1)
             {
@@ -57,7 +57,11 @@ namespace TGC.Group.Model
                 var prob = r.NextDouble();
                 if (prob <= probabilidadObtenerRecurso)
                 {
-                    GuiController.Instance.mensaje.Text = "Obtuviste " + nombreRecurso();
+                    if (!inventarioLleno)
+                    {
+                        GuiController.Instance.mensaje.Text = "Obtuviste " + nombreRecurso();
+                    }
+                    else GuiController.Instance.mensaje.Text = "Inventario lleno!";
                     GuiController.Instance.mensaje.Color = Color.Gold;
                     mostrarMensaje = true;
                     return dameTuRecurso();

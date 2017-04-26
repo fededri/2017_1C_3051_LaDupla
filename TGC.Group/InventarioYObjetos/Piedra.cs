@@ -12,6 +12,7 @@ namespace TGC.Group.InventarioYObjetos
         public Piedra()
         {
             descripcion = "Piedra, utilizada para crear dagas de piedra";
+            tipo = TiposRecursos.Piedra;
         }
 
         public override bool combinable(Recurso otroRecurso)

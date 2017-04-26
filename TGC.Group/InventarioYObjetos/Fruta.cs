@@ -9,6 +9,11 @@ namespace TGC.Group.InventarioYObjetos
 {
     class Fruta : Recurso
     {
+        public Fruta()
+        {
+            tipo = TiposRecursos.Comida;
+        }
+
         public override bool combinable(Recurso otroRecurso)
         {
             return false;

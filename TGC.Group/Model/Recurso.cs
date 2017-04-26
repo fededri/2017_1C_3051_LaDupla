@@ -11,6 +11,7 @@ namespace TGC.Group.Model
     abstract class Recurso
     { 
   
+
         public int cantidad { get; set; }
         public String descripcion { get; set; }
         abstract public  bool combinable(Recurso otroRecurso);
