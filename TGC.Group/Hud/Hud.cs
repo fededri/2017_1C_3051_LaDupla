@@ -10,6 +10,7 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TGC.Group.Model;
 using TGC.Group.InventarioYObjetos;
+using TGC.Group.Camara;
 
 namespace TGC.Group.Hud
 {
@@ -28,6 +29,7 @@ namespace TGC.Group.Hud
         String directorio;
         public TgcText2D mensaje { get; set; }
         public bool mostrarMensaje { get; set; }
+        public float mensajeTimer { get; set; }
 
       
 
@@ -112,6 +114,12 @@ namespace TGC.Group.Hud
 
         }
 
+
+        public void update()
+        {
+            mensajeTimer += GuiController.Instance.ElapsedTime;
+        }
+
         public ItemContainer getPrimerItemContainerLibre()
         {
             foreach ( var item in itemsContainerSprite)
@@ -154,7 +162,7 @@ namespace TGC.Group.Hud
                 drawer2D.DrawSprite(item);
             }
             drawer2D.EndDrawSprite();
-            if (mostrarMensaje)
+            if (mostrarMensaje && mensajeTimer >= 2)
             {
                 mostrarMensaje = false;
                 mensaje.render();

@@ -337,6 +337,7 @@ namespace TGC.Group.Model
                         else
                         {
                             hud.mensaje.Text = "Inventario Lleno!";
+                            hud.mensajeTimer = 0;
                             hud.mostrarMensaje = true;
                         }
                         
@@ -357,7 +358,7 @@ namespace TGC.Group.Model
             PreUpdate();
 
             GuiController.Instance.ElapsedTime = ElapsedTime;
-            
+            hud.update();
             
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))
