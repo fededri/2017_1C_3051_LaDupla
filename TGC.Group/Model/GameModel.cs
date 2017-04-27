@@ -17,6 +17,7 @@ using TGC.Group.InventarioYObjetos;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
 using Microsoft.DirectX.Direct3D;
+using TGC.Core.Text;
 
 namespace TGC.Group.Model
 {
@@ -75,6 +76,7 @@ namespace TGC.Group.Model
         private TgcFpsCamera cam;
         private Hud.Hud hud;
         private Personaje personaje;
+       
 
 
         //Boleano para ver si dibujamos el boundingbox
@@ -95,7 +97,8 @@ namespace TGC.Group.Model
             personaje = new Personaje(hud);
 
             objetosABorrar = new List<Crafteable>();
-            objetos = new List<Crafteable>();          
+            objetos = new List<Crafteable>();
+
 
             var texturesPath = MediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
             //Configurar las texturas para cada una de las 6 caras
@@ -233,7 +236,7 @@ namespace TGC.Group.Model
         {
             planosAgua = new List<TgcPlane>();
 
-            var plano = new TgcPlane(new Vector3(-planoTransicionPastoArenaAncho, 0, -altoTransicionPastoArena), new Vector3(anchoIsla + 40000, 0, -10000),
+            var plano = new TgcPlane(new Vector3(-(planoTransicionPastoArenaAncho + 10000), 0, -altoTransicionPastoArena), new Vector3(anchoIsla + 40000, 0, -10000),
                 TgcPlane.Orientations.XZplane, aguaTexture, 1f, 1f);
             planosAgua.Add(plano);
 
