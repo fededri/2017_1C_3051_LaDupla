@@ -6,6 +6,7 @@ using TGC.Core.Camara;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Utils;
+using TGC.Group.Shaders;
 
 namespace TGC.Group.Camara
 {
@@ -34,7 +35,9 @@ namespace TGC.Group.Camara
         private float DEFAULT_HEIGHT = 100f;
         public bool colision { get; set; }
         public Vector3 lastMoveVector { get; set; }
-        public TgcFpsCamera(TgcD3dInput input)
+        public MySimpleTerrain terrain { get; set; }
+
+        public TgcFpsCamera(TgcD3dInput input)    
         {
             Input = input;
             positionEye = new Vector3();
@@ -42,8 +45,9 @@ namespace TGC.Group.Camara
                 D3DDevice.Instance.Device.Viewport.Width / 2,
                 D3DDevice.Instance.Device.Viewport.Height / 2);
             RotationSpeed = 0.01f;
-           //RotationSpeed = 0.001f; // PARA LA MACBOOK
-            MovementSpeed = 500f;
+            //RotationSpeed = 0.001f; // PARA LA MACBOOK
+           MovementSpeed = 500f;
+           // MovementSpeed = 1500f;
             JumpSpeed = 500f;
             directionView = new Vector3(0, 0, -1);
             leftrightRot = FastMath.PI_HALF;
@@ -181,7 +185,7 @@ namespace TGC.Group.Camara
                 positionEyeMoveVector += cameraRotatedPositionEye;
 
                 var rotated = cameraRotatedPositionEye;
-                //rotated.Y = 0;
+           // rotated.Y = 0;
                 positionEye += rotated;
 
                 //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
@@ -190,6 +194,13 @@ namespace TGC.Group.Camara
 
                 var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
                 var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
+            if(terrain != null)
+            {
+                var altura = terrain.CalcularAltura(positionEye.X, positionEye.Z);
+             //   positionEye.Y = altura + 100;
+
+            }
+           
             base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
 
  

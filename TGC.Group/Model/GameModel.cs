@@ -164,23 +164,39 @@ namespace TGC.Group.Model
             currentTerrain = new MySimpleTerrain();
             currentTerrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
            new Vector3(0, 0, 0));          
-            currentTerrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");        
-          
-               int zCounter = 0;
-               for(int i = 0;i < 10; i++)
+            currentTerrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
+
+          /* var terrain = new MySimpleTerrain();
+            terrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
+           new Vector3(0, 0, 0));
+            terrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
+            terrains.Add(terrain);
+
+            var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name);
+            instance.AutoTransformEnable = true;
+            instance.move(3000, currentTerrain.CalcularAltura(0, 0), -3000);
+
+            instance.Scale = new Vector3(3f, 5f, 3f);
+  
+            var palmera = new Palmera(instance);
+            objetos.Add(palmera);*/
+
+            
+              int zCounter = 0;
+               for(int i = 0;i < 5; i++)
                {
                    int xCounter = 0;
-                   for (int j = 0; j < 10; j++)
+                   for (int j = 0; j < 5; j++)
                    {
                        var terrain = new MySimpleTerrain();                    
                        terrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
                       new Vector3(xCounter, 0, zCounter));
-                       xCounter += 62;
+                       xCounter += 61;
                        terrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
                        terrains.Add(terrain);
-                    initPalmeras(terrain);
-                    //initRocas(terrain);
-                    //initArbustos(terrain);
+                    initPalmeras(terrain,j,i);
+                    initRocas(terrain,j,i);
+                    initArbustos(terrain,j,i);
                 }
                 zCounter += 62;
             }
@@ -189,13 +205,13 @@ namespace TGC.Group.Model
 
         #region inits
         //crea las instancias de las palmeras y las ubica de forma random en el espacio
-        private void initPalmeras(MySimpleTerrain terrain)
+        private void initPalmeras(MySimpleTerrain terrain,int iteracionJ, int iteracionI)
         {
-            Vector3 center = terrain.center;
+            Vector3 center = new Vector3(terrain.center.X + (6000 * iteracionJ), terrain.center.Y, terrain.center.Z + (6000 * iteracionI));
             float scaleXZ = terrain.scaleXZ;
 
-            int limiteSupX = (int)center.X + 25000;
-            int limiteSupZ = (int)center.Z + 25000;
+            int limiteSupX = (int)center.X + 2500;
+            int limiteSupZ = (int)center.Z + 2500;
 
             int limiteInfX = (int)center.X - 2500;
             int limiteInfZ = (int)center.Z - 2500;
@@ -203,13 +219,13 @@ namespace TGC.Group.Model
             float offsetX, offsetZ;
             var random = new Random();
 
-            for(var i = 0; i < 5; i++)
+            for(var i = 0; i < 20; i++)
             {
                 offsetX = random.Next(limiteInfX, limiteSupX);
                 offsetZ = random.Next(limiteInfZ, limiteSupZ);
                 var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);               
                 instance.AutoTransformEnable = true;
-                instance.move(offsetX,currentTerrain.CalcularAltura(offsetX,offsetZ), offsetZ);
+                instance.move(offsetX,terrain.CalcularAltura(offsetX,offsetZ), offsetZ);
              
                instance.Scale = new Vector3(3f, 5f, 3f);
                 var collisionableCylinder = new TgcBoundingCylinder(new Vector3(offsetX,0,offsetZ),60,800);
@@ -221,9 +237,10 @@ namespace TGC.Group.Model
         }
 
 
-        private void initRocas(MySimpleTerrain terrain)
+        private void initRocas(MySimpleTerrain terrain, int iteracionJ, int iteracionI)
         {
-            Vector3 center = terrain.center;
+            Vector3 center = new Vector3(terrain.center.X + (6000*iteracionJ),terrain.center.Y,terrain.center.Z +(6000*iteracionI));
+
             float scaleXZ = terrain.scaleXZ;
 
             int limiteSupX = (int)center.X + 2500;
@@ -253,9 +270,9 @@ namespace TGC.Group.Model
         }
 
 
-        private void initArbustos(MySimpleTerrain terrain)
+        private void initArbustos(MySimpleTerrain terrain, int iteracionJ, int iteracionI)
         {
-            Vector3 center = terrain.center;
+            Vector3 center = new Vector3(terrain.center.X + (6000 * iteracionJ), terrain.center.Y, terrain.center.Z + (6000 * iteracionI));
             float scaleXZ = terrain.scaleXZ;
 
             int limiteSupX = (int)center.X + 2500;
@@ -266,14 +283,14 @@ namespace TGC.Group.Model
 
             arbustos = new List<TgcMesh>();
             var random = new Random();
-            for(var i = 0; i<5; i++)
+            for(var i = 0; i<10; i++)
             {
                 var offsetX = random.Next(limiteInfX,limiteSupX);
                 var offsetZ = random.Next(limiteInfZ,limiteSupZ);
                 var instance = arbustoMesh.createMeshInstance(arbustoMesh.Name + "i");
                 instance.AutoTransformEnable = true;
 
-                instance.move(offsetX, currentTerrain.CalcularAltura(offsetX, offsetZ), offsetZ);
+                instance.move(offsetX, terrain.CalcularAltura(offsetX, offsetZ), offsetZ);
                 if (random.Next(0, 2) == 1)
                 {
                     instance.Scale = new Vector3(5f, 5f, 5f);                
@@ -404,6 +421,48 @@ namespace TGC.Group.Model
             
         }
 
+
+        //si el usuario se desplaza y llega a un punto que no hay mas terreno creo un nuevo terrain
+       //el terrain tiene 3000 puntos a cada lado desde su centro (cuadrado)
+        public void CheckTerrenoSegunPos(Vector3 position)
+        {
+            foreach(var terrain in terrains)
+            {
+                Vector3 terrainCentro = new Vector3(terrain.center.X,0,terrain.center.Z);
+                                
+                    var distancia = Vector3.Length(position - terrainCentro);
+                    if(distancia <= 3000)
+                    {
+                    //estoy en este heightmap
+                    if(distancia >= 2900)
+                    {
+                        var nTerrain = new MySimpleTerrain();
+                        nTerrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
+                       new Vector3(terrain.center.X + 20,0,terrain.center.Z + 20));
+                        nTerrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
+                        terrains.Add(nTerrain);
+                        break;
+                    }
+                    
+                    }
+
+
+
+               }
+
+               
+            }
+        
+
+        public bool isMyPositionInsideTerrain(MySimpleTerrain terrain, Vector3 position)
+        {
+            Vector3 terrainCentro = terrain.center;
+            return ((position.X <= terrainCentro.X + 3000 && position.Z <= terrainCentro.Z + 3000) ||
+                    (position.X >= terrainCentro.X - 3000 && position.Z <= terrainCentro.Z + 3000) ||
+                    (position.X <= terrainCentro.X + 3000 && position.Z >= terrainCentro.Z - 3000) ||
+                    (position.X >= terrainCentro.X - 3000 && position.Z >= terrainCentro.Z - 3000));
+        }
+
         /// <summary>
         ///     Se llama en cada frame.
         ///     Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones
@@ -478,9 +537,15 @@ namespace TGC.Group.Model
                     
                     }
                 }
-            }          
+            }
+            cam.terrain = currentTerrain;
             Camara.UpdateCamera(ElapsedTime);
-           
+            //CheckTerrenoSegunPos(cam.positionEye);
+            //mostrar posicion actual
+          /*  string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
+            GuiController.Instance.mensaje.Text = pos;
+            GuiController.Instance.mostrarMensaje = true;
+            GuiController.Instance.timerMensaje = 0;*/
         }
 
 
@@ -539,7 +604,7 @@ namespace TGC.Group.Model
             }*/
 
             
-
+           
 
             if (GuiController.Instance.mostrarMensaje && GuiController.Instance.timerMensaje < 0.8)
             {
