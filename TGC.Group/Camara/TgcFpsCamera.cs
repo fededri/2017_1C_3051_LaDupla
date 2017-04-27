@@ -181,7 +181,7 @@ namespace TGC.Group.Camara
                 positionEyeMoveVector += cameraRotatedPositionEye;
 
                 var rotated = cameraRotatedPositionEye;
-                rotated.Y = 0;
+                //rotated.Y = 0;
                 positionEye += rotated;
 
                 //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
