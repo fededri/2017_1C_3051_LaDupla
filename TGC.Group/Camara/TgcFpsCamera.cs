@@ -35,7 +35,6 @@ namespace TGC.Group.Camara
         private float DEFAULT_HEIGHT = 100f;
         public bool colision { get; set; }
         public Vector3 lastMoveVector { get; set; }
-        public MySimpleTerrain terrain { get; set; }
 
         public TgcFpsCamera(TgcD3dInput input)    
         {
@@ -194,12 +193,8 @@ namespace TGC.Group.Camara
 
                 var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
                 var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
-            if(terrain != null)
-            {
-                var altura = terrain.CalcularAltura(positionEye.X, positionEye.Z);
-             //   positionEye.Y = altura + 100;
-
-            }
+      
+            
            
             base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
 

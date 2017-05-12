@@ -78,6 +78,9 @@ namespace TGC.Group.Model
         private Personaje personaje;
         private List<MySimpleTerrain> terrains;
         private MySimpleTerrain currentTerrain;
+        private World world;
+        private  World[][] worlds;
+        private int worldSize = 7500;
 
 
         //Boleano para ver si dibujamos el boundingbox
@@ -142,7 +145,8 @@ namespace TGC.Group.Model
             rocaOriginal = rocaScene.Meshes[0];
 
 
-            loadTerrains();
+            //loadTerrains();
+            loadWorld();
             //initPalmeras();
             //initRocas();
             //initTransicionPastoArena();
@@ -158,11 +162,29 @@ namespace TGC.Group.Model
 
         }
 
+        private void loadWorld()
+        {
+            worlds = new World[3][];
+            worlds[0] = new World[3];
+            worlds[1] = new World[3];
+            worlds[2] = new World[3];
+
+            worlds[0][0] = new World(new Vector3(-worldSize, 0, worldSize), worldSize,MediaDir);
+            worlds[0][1] = new World(new Vector3(0, 0, worldSize), worldSize, MediaDir);
+            worlds[0][2] = new World(new Vector3(worldSize, 0, worldSize), worldSize, MediaDir);
+            worlds[1][1] = new World(new Vector3(0, 0, 0), worldSize, MediaDir);
+            worlds[1][0] = new World(new Vector3(-worldSize, 0, 0), worldSize, MediaDir);
+            worlds[1][2] = new World(new Vector3(worldSize, 0, 0), worldSize, MediaDir);
+            worlds[2][0] = new World(new Vector3(-worldSize, 0, -worldSize), worldSize, MediaDir);
+            worlds[2][1] = new World(new Vector3(0, 0, -worldSize), worldSize, MediaDir);
+            worlds[2][2] = new World(new Vector3(worldSize, 0, -worldSize), worldSize, MediaDir);
+
+        }
 
         private void loadTerrains()
         {
             currentTerrain = new MySimpleTerrain();
-            currentTerrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
+            currentTerrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap3.jpg", 45.0550f, 0.5950f,
            new Vector3(0, 0, 0));          
             currentTerrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
 
@@ -183,15 +205,15 @@ namespace TGC.Group.Model
 
             
               int zCounter = 0;
-               for(int i = 0;i < 5; i++)
+               for(int i = 0;i < 1; i++)
                {
                    int xCounter = 0;
-                   for (int j = 0; j < 5; j++)
+                   for (int j = 0; j < 2; j++)
                    {
                        var terrain = new MySimpleTerrain();                    
                        terrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
                       new Vector3(xCounter, 0, zCounter));
-                       xCounter += 61;
+                       xCounter += 101;
                        terrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
                        terrains.Add(terrain);
                     initPalmeras(terrain,j,i);
@@ -223,8 +245,7 @@ namespace TGC.Group.Model
             {
                 offsetX = random.Next(limiteInfX, limiteSupX);
                 offsetZ = random.Next(limiteInfZ, limiteSupZ);
-                var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);               
-                instance.AutoTransformEnable = true;
+                var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);    
                 instance.move(offsetX,terrain.CalcularAltura(offsetX,offsetZ), offsetZ);
              
                instance.Scale = new Vector3(3f, 5f, 3f);
@@ -486,7 +507,7 @@ namespace TGC.Group.Model
                 checkearObjetoMasCercano(Camara.Position);
             }
 
-            updateObjetos();
+          //  updateObjetos();
 
             D3DDevice.Instance.Device.Transform.Projection =
               Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
@@ -494,6 +515,7 @@ namespace TGC.Group.Model
                   D3DDevice.Instance.ZNearPlaneDistance,
                   D3DDevice.Instance.ZFarPlaneDistance *2f);
 
+            if(cam!= null)
             skyBox.Center = cam.positionEye;
 
             GuiController.Instance.agregartiempoAtimerClima(ElapsedTime);
@@ -538,7 +560,6 @@ namespace TGC.Group.Model
                     }
                 }
             }
-            cam.terrain = currentTerrain;
             Camara.UpdateCamera(ElapsedTime);
             //CheckTerrenoSegunPos(cam.positionEye);
             //mostrar posicion actual
@@ -569,10 +590,17 @@ namespace TGC.Group.Model
             PreRender();
             D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
             //suelo.render();
-                     foreach(var terrain in terrains)
-            {
-                terrain.render();
-            }
+            /*foreach(var terrain in terrains)
+           {
+               terrain.render();
+           }*/
+            worlds[0][0].render();
+            worlds[0][1].render();
+            worlds[0][2].render();
+            worlds[1][1].render();
+            worlds[2][0].render();
+            worlds[2][1].render();
+
             hud.render();
             
         

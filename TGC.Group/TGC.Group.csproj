@@ -112,6 +112,7 @@
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\Personaje.cs" />
     <Compile Include="Model\Recurso.cs" />
+    <Compile Include="Model\World.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shaders\MySimpleTerrain.cs" />
