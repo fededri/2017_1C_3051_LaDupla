@@ -27,7 +27,7 @@ namespace TGC.Group.Model
         Random rnd = new Random();
         String mediaDir;
         List<Crafteable> objects;
-        private TgcMesh palmeraMesh;
+        private TgcMesh palmeraMesh,rocaMesh,arbustoMesh;
 
 
         public World(Vector3 terrainCenter, int size, String mediaDir)
@@ -39,7 +39,7 @@ namespace TGC.Group.Model
 
             this.terrainHeightmap = mediaDir + "Heighmaps\\Heightmap3.jpg";
             this.currentScaleXZ = (79.5f / 5000) * size;
-            this.currentScaleY = 2f;
+            this.currentScaleY = 1f;
             this.position = terrainCenter;
             this.terrain = new TgcSimpleTerrain();
             this.refreshTerrain();
@@ -50,8 +50,13 @@ namespace TGC.Group.Model
                 loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
                
            palmeraMesh = palmeraScene.Meshes[0];
+
+            var rocaScene = loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Vegetacion\\Roca\\Roca-TgcScene.xml");
+            rocaMesh = rocaScene.Meshes[0];
+
             this.objects = new List<Crafteable>();
             crearPalmeras();
+            crearArbustos();
         }
 
         public void refreshTerrain()
@@ -133,15 +138,52 @@ namespace TGC.Group.Model
         } 
 
 
+        public void crearArbustos()
+        {
+            var random = new Random();
+
+            int a = size / 2;
+            for (var i = 0; i < 10; i++)
+            {             
+               var  offsetX = random.Next((int)position.X - (size - a), (int)position.X + (size - a));
+               var  offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z + (size - a));
+                var instance = rocaMesh.createMeshInstance(palmeraMesh.Name + i);
+                instance.AutoTransformEnable = true;
+
+                instance.move(offsetX, calcularAltura(offsetX, offsetZ), offsetZ);
+                if (random.Next(0, 2) == 1)
+                {
+                    instance.Scale = new Vector3(5f, 5f, 5f);
+                    Arbusto arbustoObj = new Arbusto(instance);
+                    objects.Add(arbustoObj);
+                }
+                else
+                {
+                    instance.Scale = new Vector3(1f, 1f, 1f);
+                    Arbusto arbustoObj = new Arbusto(instance);
+                    objects.Add(arbustoObj);
+                }
+
+            }
+        }
+
+        public void crearRocas()
+        {
+
+        }
+
+
         public void crearPalmeras()
         {
             float offsetX, offsetZ;
             var random = new Random();
+            int a = size / 2;
+           
 
             for (var i = 0; i < 20; i++)
             {
-                offsetX = random.Next(-size/2, size/2);
-                offsetZ = random.Next(-size/2, size/2);
+                offsetX = random.Next((int)position.X - (size- a), (int) position.X + (size - a));
+                offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z + (size - a));
                 var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);
                 instance.move(offsetX, calcularAltura(offsetX, offsetZ), offsetZ);
                 instance.AutoTransformEnable = true;

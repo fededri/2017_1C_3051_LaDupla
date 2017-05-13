@@ -169,15 +169,19 @@ namespace TGC.Group.Model
             worlds[1] = new World[3];
             worlds[2] = new World[3];
 
-            worlds[0][0] = new World(new Vector3(-worldSize, 0, worldSize), worldSize,MediaDir);
-            worlds[0][1] = new World(new Vector3(0, 0, worldSize), worldSize, MediaDir);
-            worlds[0][2] = new World(new Vector3(worldSize, 0, worldSize), worldSize, MediaDir);
-            worlds[1][1] = new World(new Vector3(0, 0, 0), worldSize, MediaDir);
-            worlds[1][0] = new World(new Vector3(-worldSize, 0, 0), worldSize, MediaDir);
-            worlds[1][2] = new World(new Vector3(worldSize, 0, 0), worldSize, MediaDir);
-            worlds[2][0] = new World(new Vector3(-worldSize, 0, -worldSize), worldSize, MediaDir);
-            worlds[2][1] = new World(new Vector3(0, 0, -worldSize), worldSize, MediaDir);
-            worlds[2][2] = new World(new Vector3(worldSize, 0, -worldSize), worldSize, MediaDir);
+            int off = 0;
+
+            worlds[0][0] = new World(new Vector3(-(worldSize - off), 0, worldSize - off), worldSize,MediaDir);
+            worlds[0][1] = new World(new Vector3(0, 0, worldSize - off), worldSize, MediaDir);
+            worlds[0][2] = new World(new Vector3(worldSize - off, 0, worldSize - off), worldSize, MediaDir);
+            worlds[1][1] = new World(new Vector3(0, 0, 0), worldSize - off, MediaDir);
+            worlds[1][0] = new World(new Vector3(-(worldSize- off), 0, 0), worldSize, MediaDir);
+            worlds[1][2] = new World(new Vector3(worldSize- off, 0, 0), worldSize, MediaDir);
+            worlds[2][0] = new World(new Vector3(-(worldSize - off), 0, -worldSize), worldSize, MediaDir);
+            worlds[2][1] = new World(new Vector3(0, 0, -(worldSize- off)), worldSize, MediaDir);
+            worlds[2][2] = new World(new Vector3(worldSize  - off, 0, -(worldSize- off)), worldSize, MediaDir);
+
+
 
         }
 
@@ -563,10 +567,10 @@ namespace TGC.Group.Model
             Camara.UpdateCamera(ElapsedTime);
             //CheckTerrenoSegunPos(cam.positionEye);
             //mostrar posicion actual
-          /*  string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
+            string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
             GuiController.Instance.mensaje.Text = pos;
             GuiController.Instance.mostrarMensaje = true;
-            GuiController.Instance.timerMensaje = 0;*/
+            GuiController.Instance.timerMensaje = 0;
         }
 
 
@@ -579,11 +583,7 @@ namespace TGC.Group.Model
             }
         }
 
-        /// <summary>
-        ///     Se llama cada vez que hay que refrescar la pantalla.
-        ///     Escribir aquí todo el código referido al renderizado.
-        ///     Borrar todo lo que no haga falta.
-        /// </summary>
+   
         public override void Render()
         {
             //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
@@ -596,15 +596,19 @@ namespace TGC.Group.Model
            }*/
             worlds[0][0].render();
             worlds[0][1].render();
-            worlds[0][2].render();
+            worlds[0][1].render();
+            worlds[1][0].render();
             worlds[1][1].render();
+            worlds[1][2].render();
             worlds[2][0].render();
             worlds[2][1].render();
+            worlds[2][2].render();
+
 
             hud.render();
             
         
-            //renderizado de objetos
+          
             foreach (var objeto in objetos)
             {
                 objeto.render();
