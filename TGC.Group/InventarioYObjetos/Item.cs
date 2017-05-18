@@ -10,7 +10,7 @@ using TGC.Group.Model;
 
 namespace TGC.Group.InventarioYObjetos
 {
-    class Item
+    public class Item
     {
         public CustomSprite itemSprite {get;set;}
         public Recurso recurso { get; set; }

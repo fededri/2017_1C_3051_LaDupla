@@ -14,7 +14,7 @@ using TGC.Group.Camara;
 
 namespace TGC.Group.Hud
 {
-    class Hud
+    public class Hud
     {
         TgcText2D vida;
         TgcText2D agua;

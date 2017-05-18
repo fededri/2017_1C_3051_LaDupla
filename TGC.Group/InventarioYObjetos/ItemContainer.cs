@@ -13,7 +13,7 @@ using TGC.Group.Model;
 namespace TGC.Group.InventarioYObjetos
 {
     //es el sprite negro que contiene a los items en el inventario
-    class ItemContainer
+   public class ItemContainer
     {
         public CustomSprite sprite { get; set; }
         public bool estaDisponible { get; set; }

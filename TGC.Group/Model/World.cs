@@ -48,6 +48,7 @@ namespace TGC.Group.Model
             this.terrain = new TgcSimpleTerrain();
             this.refreshTerrain();
             this.terrain.loadTexture(terrainTexture);
+            this.objetosABorrar = new List<Crafteable>();
 
             var loader = new TgcSceneLoader();
             var palmeraScene =
@@ -84,6 +85,7 @@ namespace TGC.Group.Model
         {
             foreach (var obj in objects)
             {
+                obj.update();
                 if (obj.cilindro != null)
                 {
 
@@ -111,6 +113,14 @@ namespace TGC.Group.Model
         {
             if (!rendered)
             {
+                foreach (var crafteable in objetosABorrar)
+                {
+                    if (crafteable.destruirse)
+                    {
+                        objects.Remove(crafteable);
+                    }
+                }
+
                 this.terrain.render();
                 if (objects != null && objects.Count > 0)
                     foreach (var crafteable in objects)
@@ -171,6 +181,30 @@ namespace TGC.Group.Model
         {
             this.setPosition(this.position + distance);
             this.objects.ForEach(crafteable => { crafteable.move(distance); });
+        }
+
+        private List<Crafteable> objetosABorrar;
+
+        public void checkearObjetoMasCercano(Vector3 position, float maximaDistanciaAObjConsumible, Personaje personaje)
+        {
+            foreach (var objeto in objects)
+            {
+                var distancia = Vector3.Length(objeto.Position - position);
+                if (distancia <= maximaDistanciaAObjConsumible && distancia > 0)
+                {
+                    //consumir
+                    bool inventarioLleno = personaje.inventarioLleno();
+                    var result = objeto.consumir(inventarioLleno);
+                    if (objeto.destruirse) objetosABorrar.Add(objeto);
+                    if (result != null)
+                    {
+                        //agrego objeto al personaje si tiene espacio
+                        if (!inventarioLleno)
+                            personaje.agregarRecurso(result);
+
+                    }
+                }
+            }
         }
 
         public void setPosition(Vector3 position)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TGC.Group.Model
 {
-    class Personaje
+    public class Personaje
     {
         int vida { get; set; }
         int hambre { get; set; }

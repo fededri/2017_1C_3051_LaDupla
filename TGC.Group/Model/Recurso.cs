@@ -8,7 +8,7 @@ namespace TGC.Group.Model
 {
     public enum TiposRecursos { NO_ASIGNADO, Madera, Piedra, Comida, Bebida, Encendedor };
 
-    abstract class Recurso
+    public abstract class Recurso
     { 
   
 

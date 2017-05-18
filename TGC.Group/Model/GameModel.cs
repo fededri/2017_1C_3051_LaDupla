@@ -208,26 +208,20 @@ namespace TGC.Group.Model
 
         //debe chequear si hay un objeto cercano en frente del usuario
         public void checkearObjetoMasCercano(Vector3 position)
-        {       
-           foreach(var objeto in objetos)
-            {
-                var distancia = Vector3.Length(objeto.Position - position);
-                if (distancia <= MAX_DIST_A_OBJ_CONSUMIBLE && distancia > 0)
-                {
-                    //consumir palmera
-                    bool inventarioLleno = personaje.inventarioLleno();
-                   var result = objeto.consumir(inventarioLleno);
-                    if (objeto.destruirse) objetosABorrar.Add(objeto);
-                    if(result !=null)
-                    {
-                        //agrego objeto al personaje si tiene espacio
-                        if (!inventarioLleno)
-                            personaje.agregarRecurso(result);                   
-                                               
-                    }
-                }
-            }          
-            
+        {
+            currentWorld.checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[0][0].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[0][1].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[0][2].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[1][0].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[1][1].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[1][2].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[2][0].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[2][1].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+            worlds[2][2].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
+
+
+
         }
 
 
@@ -312,7 +306,6 @@ namespace TGC.Group.Model
             PreUpdate();
 
             GuiController.Instance.ElapsedTime = ElapsedTime;
-            //currentWorld = calculateCurrentWorld(cam.positionEye);
             cam.currentworld = currentWorld;
 
             
@@ -327,7 +320,7 @@ namespace TGC.Group.Model
                 checkearObjetoMasCercano(Camara.Position);
             }
 
-          //  updateObjetos();
+        
 
             D3DDevice.Instance.Device.Transform.Projection =
               Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
@@ -372,23 +365,17 @@ namespace TGC.Group.Model
             Camara.UpdateCamera(ElapsedTime);
 
             
-            //CheckTerrenoSegunPos(cam.positionEye);
+            
             //mostrar posicion actual
-            string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
+           /* string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
             GuiController.Instance.mensaje.Text = pos;
             GuiController.Instance.mostrarMensaje = true;
-            GuiController.Instance.timerMensaje = 0;
+            GuiController.Instance.timerMensaje = 0;*/
         }
 
 
 
-        public void updateObjetos()
-        {
-            foreach(var objeto in objetos)
-            {
-                objeto.update();
-            }
-        }
+  
 
 
         public void refreshWorlds()
