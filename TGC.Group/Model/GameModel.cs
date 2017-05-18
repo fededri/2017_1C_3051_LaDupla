@@ -122,7 +122,7 @@ namespace TGC.Group.Model
             loadWorld();
          
             
-            cam = new TgcFpsCamera(new Vector3(0, 200f, 0), Input);
+            cam = new TgcFpsCamera(new Vector3(0, 150f, 0), Input);
             cam.currentworld = currentWorld;
             Camara = cam;
 
@@ -343,28 +343,17 @@ namespace TGC.Group.Model
                    // skyBox.Init();
                     break;
             }
-                     
-            foreach (var obj in objetos)
-            {
-                if(obj.cilindro != null)
-                {
-                  
-                    if (TgcCollisionUtils.testPointCylinder(Camara.Position, obj.cilindro))
-                    {
-                       obj.cilindro.setRenderColor(Color.Blue);
-                        cam.colision = true; 
-               
-                    }
-                } else if(obj.esfera != null)
-                {
-                    if (TgcCollisionUtils.testPointSphere(obj.esfera, Camara.Position))
-                    {
-                        cam.colision = true;
-                        break;
-                    
-                    }
-                }
-            }
+
+            if(currentWorld != null)
+            worlds[0][0].update(Camara.Position, cam);
+            worlds[0][1].update(Camara.Position, cam);
+            worlds[0][2].update(Camara.Position, cam);
+            worlds[1][0].update(Camara.Position, cam);
+            worlds[1][1].update(Camara.Position, cam);
+            worlds[1][2].update(Camara.Position, cam);
+            worlds[2][0].update(Camara.Position, cam);
+            worlds[2][1].update(Camara.Position, cam);
+            worlds[2][2].update(Camara.Position, cam);
             Camara.UpdateCamera(ElapsedTime);
             currentWorld =  calculateCurrentWorld(cam.positionEye);    
             //CheckTerrenoSegunPos(cam.positionEye);

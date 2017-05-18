@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.BoundingVolumes;
+using TGC.Core.Collision;
 using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
+using TGC.Group.Camara;
 using TGC.Group.InventarioYObjetos;
 using TGC.Group.Shaders;
 
@@ -70,6 +72,34 @@ namespace TGC.Group.Model
             this.terrain.loadHeightmap(this.terrainHeightmap, this.currentScaleXZ, this.currentScaleY, this.terrainPosition);
         }
 
+
+        public void update(Vector3 cameraPosition, TgcFpsCamera cam)
+        {
+            foreach (var obj in objects)
+            {
+                if (obj.cilindro != null)
+                {
+
+                    if (TgcCollisionUtils.testPointCylinder(cameraPosition, obj.cilindro))
+                    {
+                       obj.cilindro.setRenderColor(Color.Blue);
+                        cam.colision = true;
+
+                    }
+                }
+                else if (obj.esfera != null)
+                {
+                    if (TgcCollisionUtils.testPointSphere(obj.esfera, cameraPosition))
+                    {
+                        cam.colision = true;
+                        break;
+
+                    }
+                }
+            }
+        }
+
+
         public void render()
         {
             this.terrain.render();
@@ -77,6 +107,8 @@ namespace TGC.Group.Model
             foreach(var crafteable in objects)
                 {
                     crafteable.render();
+                  //  if (crafteable.cilindro != null) crafteable.cilindro.render();
+                  //  if (crafteable.esfera != null) crafteable.esfera.render();
                 }
         }     
 
@@ -187,8 +219,8 @@ namespace TGC.Group.Model
 
                 instance.AutoTransformEnable = true;
                 instance.move(offsetX, calcularAltura(offsetX, offsetZ), offsetZ);
-                instance.Scale = new Vector3(5f, 2f, 5f);
-                var esfera = new TgcBoundingSphere(new Vector3(offsetX, calcularAltura(offsetX, offsetZ), offsetZ), 120);
+                instance.Scale = new Vector3(5f, 3f, 5f);
+                var esfera = new TgcBoundingSphere(new Vector3(offsetX, calcularAltura(offsetX, offsetZ), offsetZ), 180);
 
                 Roca roca = new Roca(instance);
                 roca.esfera = esfera;
