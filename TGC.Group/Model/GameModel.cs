@@ -358,10 +358,10 @@ namespace TGC.Group.Model
             currentWorld =  calculateCurrentWorld(cam.positionEye);    
             //CheckTerrenoSegunPos(cam.positionEye);
             //mostrar posicion actual
-           // string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
-            //GuiController.Instance.mensaje.Text = pos;
-            //GuiController.Instance.mostrarMensaje = true;
-            //GuiController.Instance.timerMensaje = 0;
+            string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
+            GuiController.Instance.mensaje.Text = pos;
+            GuiController.Instance.mostrarMensaje = true;
+            GuiController.Instance.timerMensaje = 0;
         }
 
 

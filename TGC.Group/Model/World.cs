@@ -239,8 +239,8 @@ namespace TGC.Group.Model
 
             for (var i = 0; i < 20; i++)
             {
-                offsetX = random.Next((int)position.X - (size- a), (int) position.X + (size - a));
-                offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z + (size - a));
+                offsetX = random.Next((int)position.X, (int) position.X + (size - a));
+                offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z );
                 var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);
                 instance.move(offsetX, calcularAltura(offsetX, offsetZ), offsetZ);
                 instance.AutoTransformEnable = true;
