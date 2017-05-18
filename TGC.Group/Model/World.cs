@@ -109,7 +109,7 @@ namespace TGC.Group.Model
         }
 
 
-        public void render()
+        public void render(TgcFrustum frustum)
         {
             if (!rendered)
             {
@@ -121,13 +121,19 @@ namespace TGC.Group.Model
                     }
                 }
 
+             
+
                 this.terrain.render();
                 if (objects != null && objects.Count > 0)
                     foreach (var crafteable in objects)
                     {
-                        crafteable.render();
-                        //  if (crafteable.cilindro != null) crafteable.cilindro.render();
-                        //  if (crafteable.esfera != null) crafteable.esfera.render();
+                        TgcCollisionUtils.FrustumResult frustumResult = TgcCollisionUtils.classifyFrustumAABB(frustum, crafteable.mesh.BoundingBox);
+                        if (frustumResult.Equals(TgcCollisionUtils.FrustumResult.INTERSECT)
+                            || frustumResult.Equals(TgcCollisionUtils.FrustumResult.INSIDE))
+                        {
+                            crafteable.render();
+                        };
+                        //crafteable.render();
                     }
                 this.rendered = true;
             }

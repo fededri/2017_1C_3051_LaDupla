@@ -220,7 +220,7 @@ namespace TGC.Group.Model
             worlds[2][1].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
             worlds[2][2].checkearObjetoMasCercano(position, MAX_DIST_A_OBJ_CONSUMIBLE, personaje);
 
-
+            
 
         }
 
@@ -328,7 +328,10 @@ namespace TGC.Group.Model
                   D3DDevice.Instance.ZNearPlaneDistance,
                   D3DDevice.Instance.ZFarPlaneDistance *2f);
 
-            if(cam!= null)
+            Frustum.updateVolume(D3DDevice.Instance.Device.Transform.View,
+            D3DDevice.Instance.Device.Transform.Projection);
+
+            if (cam!= null)
             skyBox.Center = cam.positionEye;
 
             GuiController.Instance.agregartiempoAtimerClima(ElapsedTime);
@@ -533,38 +536,38 @@ namespace TGC.Group.Model
             Vector3 viewDir = new Vector3(cam.directionView.X, 0, cam.directionView.Z);
             Vector3 logicPosition = cam.positionEye - currentWorld.position;
             Vector3 personajePosition = cam.positionEye;
-            worlds[1][1].render();       
+            worlds[1][1].render(Frustum);       
 
             if ((viewDir.X > constante && viewDir.Z > constante) || sectorToRender == 1)
             {
                 sectorToRender = 1;
-                worlds[0][1].render();
-                worlds[0][2].render();
-                worlds[1][2].render();
+                worlds[0][1].render(Frustum);
+                worlds[0][2].render(Frustum);
+                worlds[1][2].render(Frustum);
             }
 
             if ((viewDir.X < -constante && viewDir.Z > constante) || sectorToRender == 2)
             {
                 sectorToRender = 2;
-                worlds[0][1].render();
-                worlds[0][0].render();
-                worlds[1][0].render();
+                worlds[0][1].render(Frustum);
+                worlds[0][0].render(Frustum);
+                worlds[1][0].render(Frustum);
             }
 
             if ((viewDir.X > constante && viewDir.Z < -constante) || sectorToRender == 3)
             {
                 sectorToRender = 3;
-                worlds[1][2].render();
-                worlds[2][1].render();
-                worlds[2][2].render();
+                worlds[1][2].render(Frustum);
+                worlds[2][1].render(Frustum);
+                worlds[2][2].render(Frustum);
             }
 
             if ((viewDir.X < -constante && viewDir.Z < -constante) || sectorToRender == 4)
             {
                 sectorToRender = 4;
-                worlds[1][0].render();
-                worlds[2][0].render();
-                worlds[2][1].render();
+                worlds[1][0].render(Frustum);
+                worlds[2][0].render(Frustum);
+                worlds[2][1].render(Frustum);
             }
         }
 
