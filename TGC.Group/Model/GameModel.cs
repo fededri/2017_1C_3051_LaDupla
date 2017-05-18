@@ -50,10 +50,6 @@ namespace TGC.Group.Model
         //Mesh de TgcLogo.
         private TgcMesh Mesh { get; set; }
 
-        private TgcMesh rocaOriginal;
-
-        private TgcPlane planoAgua;
-        private TgcPlane planoTransicionPastoAgua;
         private List<TgcPlane> esquinasArena;
 
         private TgcTexture arenaTexture;
@@ -65,11 +61,10 @@ namespace TGC.Group.Model
         private TgcSkyBox skyBox;
         private float MAX_DIST_A_OBJ_CONSUMIBLE = 300f;
        
-        TgcTexture transicionPastoArenaRightTexture,transicionPastoArenaDownTexture, transicionPastoArenaUpTexture, transicionPastoArenaLeftTexture;
+        
         private const int planoTransicionPastoArenaAncho = 500;
         private const int anchoIsla = 30000;
         private const int altoIsla = 30000;
-        private TgcMesh arbustoMesh;
         private TgcTexture aguaTexture;
         private List<Crafteable> objetosABorrar;
         private List<Crafteable> objetos;
@@ -77,10 +72,9 @@ namespace TGC.Group.Model
         private Hud.Hud hud;
         private Personaje personaje;
         private List<MySimpleTerrain> terrains;
-        private MySimpleTerrain currentTerrain;
-        private World world;
         private  World[][] worlds;
         private int worldSize = 7500;
+        private World currentWorld;
 
 
         //Boleano para ver si dibujamos el boundingbox
@@ -119,41 +113,17 @@ namespace TGC.Group.Model
             var d3dDevice = D3DDevice.Instance.Device;
              var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\pasto.jpg");
             aguaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Isla\\Textures\\agua 10.jpg");
-            transicionPastoArenaRightTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaRight.jpg");
-            transicionPastoArenaDownTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaDown.jpg");
-            transicionPastoArenaUpTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaUP.jpg");
-            transicionPastoArenaLeftTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "\\Isla\\Textures\\TransicionPastoArenaLeft.jpg");
-            
-            arenaTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "Isla\\Textures\\sand.jpg");
-
-            suelo = new TgcPlane(new Vector3(0, 0, 0), new Vector3(anchoIsla, 0, altoIsla), TgcPlane.Orientations.XZplane, pisoTexture, 50f,50f);
-            planoTransicionPastoAgua = new TgcPlane(new Vector3(0, 0,0), new Vector3(10, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 1f, 1f);
-
-         
-            var loader = new TgcSceneLoader();
-            var palmeraScene =
-                loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
-            var arbustoScene = loader.loadSceneFromFile(MediaDir + "\\MeshCreator\\Meshes\\Vegetacion\\Planta2\\Planta2-TgcScene.xml");
-            arbustoMesh = arbustoScene.Meshes[0];
-            palmeraMesh = palmeraScene.Meshes[0];
-
+          
+            var loader = new TgcSceneLoader();    
             var botellaAgua = new Botella() ;
             botellaAgua.tieneAgua = false;
-            personaje.agregarRecurso(botellaAgua);     
-
-            var rocaScene = loader.loadSceneFromFile(MediaDir + "MeshCreator\\Meshes\\Vegetacion\\Roca\\Roca-TgcScene.xml");
-            rocaOriginal = rocaScene.Meshes[0];
-
-
-            //loadTerrains();
+            personaje.agregarRecurso(botellaAgua);          
+                    
             loadWorld();
-            //initPalmeras();
-            //initRocas();
-            //initTransicionPastoArena();
-            //initArbustos();
-            //initAgua();
+         
             
-            cam = new TgcFpsCamera(new Vector3(0, 100f, 0), Input);
+            cam = new TgcFpsCamera(new Vector3(0, 200f, 0), Input);
+            cam.currentworld = currentWorld;
             Camara = cam;
 
             GuiController.Instance.D3dInput = Input;           
@@ -181,156 +151,19 @@ namespace TGC.Group.Model
             worlds[2][1] = new World(new Vector3(0, 0, -(worldSize- off)), worldSize, MediaDir);
             worlds[2][2] = new World(new Vector3(worldSize  - off, 0, -(worldSize- off)), worldSize, MediaDir);
 
-
-
+            currentWorld = worlds[0][0];
         }
 
-        private void loadTerrains()
-        {
-            currentTerrain = new MySimpleTerrain();
-            currentTerrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap3.jpg", 45.0550f, 0.5950f,
-           new Vector3(0, 0, 0));          
-            currentTerrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
-
-          /* var terrain = new MySimpleTerrain();
-            terrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
-           new Vector3(0, 0, 0));
-            terrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
-            terrains.Add(terrain);
-
-            var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name);
-            instance.AutoTransformEnable = true;
-            instance.move(3000, currentTerrain.CalcularAltura(0, 0), -3000);
-
-            instance.Scale = new Vector3(3f, 5f, 3f);
-  
-            var palmera = new Palmera(instance);
-            objetos.Add(palmera);*/
-
-            
-              int zCounter = 0;
-               for(int i = 0;i < 1; i++)
-               {
-                   int xCounter = 0;
-                   for (int j = 0; j < 2; j++)
-                   {
-                       var terrain = new MySimpleTerrain();                    
-                       terrain.loadHeightmap(MediaDir + "Heighmaps\\Heightmap2.jpg", 100f, 1f,
-                      new Vector3(xCounter, 0, zCounter));
-                       xCounter += 101;
-                       terrain.loadTexture(MediaDir + "Heighmaps\\grass.jpg");
-                       terrains.Add(terrain);
-                    initPalmeras(terrain,j,i);
-                    initRocas(terrain,j,i);
-                    initArbustos(terrain,j,i);
-                }
-                zCounter += 62;
-            }
-
-        }
+      
 
         #region inits
-        //crea las instancias de las palmeras y las ubica de forma random en el espacio
-        private void initPalmeras(MySimpleTerrain terrain,int iteracionJ, int iteracionI)
-        {
-            Vector3 center = new Vector3(terrain.center.X + (6000 * iteracionJ), terrain.center.Y, terrain.center.Z + (6000 * iteracionI));
-            float scaleXZ = terrain.scaleXZ;
-
-            int limiteSupX = (int)center.X + 2500;
-            int limiteSupZ = (int)center.Z + 2500;
-
-            int limiteInfX = (int)center.X - 2500;
-            int limiteInfZ = (int)center.Z - 2500;
-
-            float offsetX, offsetZ;
-            var random = new Random();
-
-            for(var i = 0; i < 20; i++)
-            {
-                offsetX = random.Next(limiteInfX, limiteSupX);
-                offsetZ = random.Next(limiteInfZ, limiteSupZ);
-                var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);    
-                instance.move(offsetX,terrain.CalcularAltura(offsetX,offsetZ), offsetZ);
-             
-               instance.Scale = new Vector3(3f, 5f, 3f);
-                var collisionableCylinder = new TgcBoundingCylinder(new Vector3(offsetX,0,offsetZ),60,800);
-                collisionableCylinder.setRenderColor(Color.Green);
-                var palmera = new Palmera(instance);
-                palmera.cilindro = collisionableCylinder;
-                objetos.Add(palmera);
-            }     
-        }
+      
 
 
-        private void initRocas(MySimpleTerrain terrain, int iteracionJ, int iteracionI)
-        {
-            Vector3 center = new Vector3(terrain.center.X + (6000*iteracionJ),terrain.center.Y,terrain.center.Z +(6000*iteracionI));
-
-            float scaleXZ = terrain.scaleXZ;
-
-            int limiteSupX = (int)center.X + 2500;
-            int limiteSupZ = (int)center.Z + 2500;
-
-            int limiteInfX = (int)center.X - 2500;
-            int limiteInfZ = (int)center.Z - 2500;
-
-            var random = new Random();
-            for (var i = 0; i < 10; i++)
-            {
-                var offsetX = random.Next(limiteInfX,limiteSupX) + random.Next(100);
-                var offsetZ = random.Next(limiteInfZ, limiteSupZ) + random.Next(100);
-                var instance = rocaOriginal.createMeshInstance(rocaOriginal.Name + "i");
-
-                instance.AutoTransformEnable = true;
-                instance.move(offsetX, terrain.CalcularAltura(offsetX, offsetZ), offsetZ);
-                instance.Scale = new Vector3(5f, 2f, 5f);
-                var esfera = new TgcBoundingSphere(new Vector3(offsetX,terrain.CalcularAltura(offsetX,offsetZ),offsetZ), 120);
-                    
-                Roca roca = new Roca(instance);
-                roca.esfera = esfera;
-                objetos.Add(roca);
-           
-            }
-
-        }
+       
 
 
-        private void initArbustos(MySimpleTerrain terrain, int iteracionJ, int iteracionI)
-        {
-            Vector3 center = new Vector3(terrain.center.X + (6000 * iteracionJ), terrain.center.Y, terrain.center.Z + (6000 * iteracionI));
-            float scaleXZ = terrain.scaleXZ;
-
-            int limiteSupX = (int)center.X + 2500;
-            int limiteSupZ = (int)center.Z + 2500;
-
-            int limiteInfX = (int)center.X - 2500;
-            int limiteInfZ = (int)center.Z - 2500;
-
-            arbustos = new List<TgcMesh>();
-            var random = new Random();
-            for(var i = 0; i<10; i++)
-            {
-                var offsetX = random.Next(limiteInfX,limiteSupX);
-                var offsetZ = random.Next(limiteInfZ,limiteSupZ);
-                var instance = arbustoMesh.createMeshInstance(arbustoMesh.Name + "i");
-                instance.AutoTransformEnable = true;
-
-                instance.move(offsetX, terrain.CalcularAltura(offsetX, offsetZ), offsetZ);
-                if (random.Next(0, 2) == 1)
-                {
-                    instance.Scale = new Vector3(5f, 5f, 5f);                
-                    Arbusto arbustoObj = new Arbusto(instance);
-                    objetos.Add(arbustoObj);
-                }
-                else
-                {
-                    instance.Scale = new Vector3(1f, 1f, 1f);
-                    Arbusto arbustoObj = new Arbusto(instance);
-                    objetos.Add(arbustoObj);
-                }
-               
-            }
-        }
+     
 
         private void initAgua()
         {
@@ -360,64 +193,7 @@ namespace TGC.Group.Model
 
         private const int altoTransicionPastoArena = 200;
 
-        private void initTransicionPastoArena()
-        {
-            transicionesPastoArena = new List<TgcPlane>();
-
-            //x+ z-
-            int startXPosition = 0;
-            while((startXPosition + planoTransicionPastoArenaAncho) <= (anchoIsla))
-            {
-                var plane = new TgcPlane(new Vector3(startXPosition, 0, 0), new Vector3(planoTransicionPastoArenaAncho, 0, -altoTransicionPastoArena), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 2f, 1f);                
-                transicionesPastoArena.Add(plane);
-                startXPosition += planoTransicionPastoArenaAncho;
-            }
-
-            //x fijo z+
-            int startZPosition = -85;
-            var arena = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0, -altoTransicionPastoArena), new Vector3(200, 0, 115), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
-            esquinasArena = new List<TgcPlane>();
-            esquinasArena.Add(arena);
-            while ( startZPosition + planoTransicionPastoArenaAncho <= altoIsla)
-            {
-                var plane = new TgcPlane(new Vector3(-altoTransicionPastoArena, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane, 
-                            transicionPastoArenaDownTexture, 1f, 2f);
-                transicionesPastoArena.Add(plane);
-                startZPosition += planoTransicionPastoArenaAncho;
-            }
-
-            //x+ z +
-            startXPosition = 0;
-            arena = new TgcPlane(new Vector3(-(altoTransicionPastoArena), 0, altoIsla - 85), new Vector3(200, 0, 335), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
-            esquinasArena.Add(arena);
-            while ((startXPosition + planoTransicionPastoArenaAncho) < (anchoIsla))
-            {
-                var plane = new TgcPlane(new Vector3(startXPosition, 0, altoIsla), new Vector3(planoTransicionPastoArenaAncho + 200, 0, altoTransicionPastoArena +50), TgcPlane.Orientations.XZplane, transicionPastoArenaRightTexture, 2f, 1f);
-                transicionesPastoArena.Add(plane);
-                startXPosition += planoTransicionPastoArenaAncho;
-            }
-
-            //x a la derecha fijo z +
-            startZPosition = -85;
-            arena = new TgcPlane(new Vector3(anchoIsla , 0, altoIsla -85), new Vector3(200, 0, 340), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
-            esquinasArena.Add(arena);
-            arena = new TgcPlane(new Vector3(anchoIsla -300, 0, altoIsla), new Vector3(300, 0, 250), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
-            esquinasArena.Add(arena);
-            while (startZPosition + planoTransicionPastoArenaAncho <= (altoIsla))
-            {
-                var plane = new TgcPlane(new Vector3(anchoIsla, 0, startZPosition), new Vector3(altoTransicionPastoArena, 0, planoTransicionPastoArenaAncho), TgcPlane.Orientations.XZplane,
-                            transicionPastoArenaUpTexture, 1f, 2f);
-                transicionesPastoArena.Add(plane);
-                startZPosition += planoTransicionPastoArenaAncho;
-            }
-
-            arena = new TgcPlane(new Vector3(anchoIsla, 0,- altoTransicionPastoArena), new Vector3(200, 0, 120), TgcPlane.Orientations.XZplane, arenaTexture, 1f, 2f);
-            esquinasArena.Add(arena);
-
-        
-
-
-        }
+       
 
         #endregion inits
 
@@ -488,6 +264,30 @@ namespace TGC.Group.Model
                     (position.X >= terrainCentro.X - 3000 && position.Z >= terrainCentro.Z - 3000));
         }
 
+
+        public World calculateCurrentWorld(Vector3 position)
+        {
+            for(int i = 0; i < 3;i++)
+            {
+                for ( int j = 0; j < 3; j++)
+                {
+                    if (estaDentroDelWorld(worldSize, worlds[i][j],position)){
+                        return worlds[i][j];
+                    }
+                }
+            }
+
+           return null;
+        }
+        private bool estaDentroDelWorld(int worldSize, World world, Vector3 position)
+        {
+            /*  return (position.X <= (world.position.X + worldSize) && position.X >= (world.position.X + worldSize)
+                  && position.Z <= (world.position.Z + worldSize) && position.Z >= (world.position.Z + worldSize)
+                  );*/
+            return (position.X >= world.position.X  && position.X <= (world.position.X + worldSize)
+                && position.Z <= world.position.Z && position.Z >= (world.position.Z - worldSize));
+        }
+
         /// <summary>
         ///     Se llama en cada frame.
         ///     Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones
@@ -498,8 +298,9 @@ namespace TGC.Group.Model
             PreUpdate();
 
             GuiController.Instance.ElapsedTime = ElapsedTime;
-          
-            
+            currentWorld = calculateCurrentWorld(cam.positionEye);
+            cam.currentworld = currentWorld;
+
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))
             {
@@ -565,12 +366,13 @@ namespace TGC.Group.Model
                 }
             }
             Camara.UpdateCamera(ElapsedTime);
+            currentWorld =  calculateCurrentWorld(cam.positionEye);    
             //CheckTerrenoSegunPos(cam.positionEye);
             //mostrar posicion actual
-            string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
-            GuiController.Instance.mensaje.Text = pos;
-            GuiController.Instance.mostrarMensaje = true;
-            GuiController.Instance.timerMensaje = 0;
+           // string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
+            //GuiController.Instance.mensaje.Text = pos;
+            //GuiController.Instance.mostrarMensaje = true;
+            //GuiController.Instance.timerMensaje = 0;
         }
 
 
@@ -660,15 +462,15 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Dispose()
         {
-            suelo.dispose();
-            palmeraMesh.dispose();
-            rocaOriginal.dispose();
-            transicionPastoArenaRightTexture.dispose();
-            transicionPastoArenaDownTexture.dispose();
-            transicionPastoArenaLeftTexture.dispose();
-            transicionPastoArenaUpTexture.dispose();
-            arbustoMesh.dispose();
-            arenaTexture.dispose();
+            worlds[0][0].dispose();
+            worlds[0][1].dispose();
+            worlds[0][2].dispose();
+            worlds[1][0].dispose();
+            worlds[1][1].dispose();
+            worlds[1][2].dispose();
+            worlds[2][0].dispose();
+            worlds[2][1].dispose();
+            worlds[2][2].dispose();
             skyBox.dispose();
             hud.dispose();
         }

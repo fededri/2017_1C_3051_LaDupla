@@ -7,6 +7,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Utils;
 using TGC.Group.Shaders;
+using TGC.Group.Model;
 
 namespace TGC.Group.Camara
 {
@@ -30,11 +31,12 @@ namespace TGC.Group.Camara
         private float updownRot;
         public Vector3 oldPosition { get; set; }
         private bool lockCam;
-
+        public World currentworld { get; set; }
         public Vector3 positionEye;
         private float DEFAULT_HEIGHT = 100f;
         public bool colision { get; set; }
         public Vector3 lastMoveVector { get; set; }
+        private int height;
 
         public TgcFpsCamera(TgcD3dInput input)    
         {
@@ -53,10 +55,12 @@ namespace TGC.Group.Camara
             updownRot = -FastMath.PI / 10.0f;
             cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
         }
+       
 
         public TgcFpsCamera(Vector3 positionEye, TgcD3dInput input) : this(input)
         {
             this.positionEye = positionEye;
+            this.height = (int)positionEye.Y;
             DEFAULT_HEIGHT = positionEye.Y;
         }
 
@@ -184,8 +188,11 @@ namespace TGC.Group.Camara
                 positionEyeMoveVector += cameraRotatedPositionEye;
 
                 var rotated = cameraRotatedPositionEye;
-           // rotated.Y = 0;
+
+                
                 positionEye += rotated;
+            if (currentworld == null) positionEye.Y = height;
+            else   positionEye.Y = currentworld.calcularAltura(positionEye.X,positionEye.Z) + height;
 
                 //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
                 var cameraRotatedTarget = Vector3.TransformNormal(directionView, cameraRotation);

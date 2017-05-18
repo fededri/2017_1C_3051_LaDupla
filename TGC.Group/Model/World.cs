@@ -48,15 +48,19 @@ namespace TGC.Group.Model
             var loader = new TgcSceneLoader();
             var palmeraScene =
                 loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
-               
-           palmeraMesh = palmeraScene.Meshes[0];
-
             var rocaScene = loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Vegetacion\\Roca\\Roca-TgcScene.xml");
+            var arbustoScene = loader.loadSceneFromFile(mediaDir + "\\MeshCreator\\Meshes\\Vegetacion\\Planta2\\Planta2-TgcScene.xml");
+
+            arbustoMesh = arbustoScene.Meshes[0];
             rocaMesh = rocaScene.Meshes[0];
+            palmeraMesh = palmeraScene.Meshes[0];
+
+          
 
             this.objects = new List<Crafteable>();
             crearPalmeras();
             crearArbustos();
+            crearRocas();
         }
 
         public void refreshTerrain()
@@ -135,6 +139,9 @@ namespace TGC.Group.Model
         public void dispose()
         {
             this.terrain.dispose();
+            rocaMesh.dispose();
+            arbustoMesh.dispose();
+            palmeraMesh.dispose();
         } 
 
 
@@ -147,7 +154,7 @@ namespace TGC.Group.Model
             {             
                var  offsetX = random.Next((int)position.X - (size - a), (int)position.X + (size - a));
                var  offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z + (size - a));
-                var instance = rocaMesh.createMeshInstance(palmeraMesh.Name + i);
+                var instance = arbustoMesh.createMeshInstance(arbustoMesh.Name + i);
                 instance.AutoTransformEnable = true;
 
                 instance.move(offsetX, calcularAltura(offsetX, offsetZ), offsetZ);
@@ -169,7 +176,25 @@ namespace TGC.Group.Model
 
         public void crearRocas()
         {
+            var random = new Random();
+            int offsetX, offsetZ;
+            int a = (size / 2) + 400;
+            for (var i = 0; i < 10; i++)
+            {
+                offsetX = random.Next((int)position.X - (size - a), (int)position.X + (size - a));
+                offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z + (size - a));
+                var instance = rocaMesh.createMeshInstance(rocaMesh.Name + "i");
 
+                instance.AutoTransformEnable = true;
+                instance.move(offsetX, calcularAltura(offsetX, offsetZ), offsetZ);
+                instance.Scale = new Vector3(5f, 2f, 5f);
+                var esfera = new TgcBoundingSphere(new Vector3(offsetX, calcularAltura(offsetX, offsetZ), offsetZ), 120);
+
+                Roca roca = new Roca(instance);
+                roca.esfera = esfera;
+                objects.Add(roca);
+
+            }
         }
 
 
@@ -177,7 +202,7 @@ namespace TGC.Group.Model
         {
             float offsetX, offsetZ;
             var random = new Random();
-            int a = size / 2;
+            int a = (size / 2) - 400;
            
 
             for (var i = 0; i < 20; i++)
