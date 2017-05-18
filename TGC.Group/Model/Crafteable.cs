@@ -41,7 +41,7 @@ namespace TGC.Group.Model
 
         public void move(Vector3 movement)
         {
-            this.mesh.Position = position + movement;
+           this.mesh.Position = mesh.Position + movement;
             if(cilindro != null) cilindro.Center = mesh.Position;
             if (esfera != null) esfera = new TgcBoundingSphere(mesh.Position, 180);
         }

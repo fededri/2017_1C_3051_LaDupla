@@ -76,7 +76,6 @@ namespace TGC.Group.Model
         private World[][] savedWorlds;
         private int worldSize = 7500;
         private World currentWorld;
-        private TgcBoxDebug box;
         private int flag = 0;
         int sectorToRender;
 
@@ -123,8 +122,6 @@ namespace TGC.Group.Model
             personaje.agregarRecurso(botellaAgua);          
                     
             loadWorld();
-
-            box = new TgcBoxDebug();
             
             cam = new TgcFpsCamera(new Vector3(0, 150f, 0), Input);
             cam.currentworld = currentWorld;
@@ -318,11 +315,7 @@ namespace TGC.Group.Model
             //currentWorld = calculateCurrentWorld(cam.positionEye);
             cam.currentworld = currentWorld;
 
-            box.PMin = new Vector3(-7500, 0, 0);
-            box.PMax = new Vector3(0, 100, 0);
-            box.Thickness = 5f;
-            box.Color = Color.Red;
-            box.updateValues();
+            
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))
             {
@@ -490,9 +483,7 @@ namespace TGC.Group.Model
             refreshWorlds();
             renderWorlds();
 
-
             hud.render();
-            box.render();
             
         
           
