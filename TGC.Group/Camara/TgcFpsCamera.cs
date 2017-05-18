@@ -24,7 +24,7 @@ namespace TGC.Group.Camara
         private Matrix cameraRotation;
 
         //Direction view se calcula a partir de donde se quiere ver con la camara inicialmente. por defecto se ve en -Z.
-        private Vector3 directionView;
+        public Vector3 directionView;
 
         //No hace falta la base ya que siempre es la misma, la base se arma segun las rotaciones de esto costados y updown.
         private float leftrightRot;

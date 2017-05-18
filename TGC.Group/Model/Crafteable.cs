@@ -27,6 +27,8 @@ namespace TGC.Group.Model
         protected Point screenCenter;
         public TgcBoundingCylinder cilindro { get; set; }
         public TgcBoundingSphere esfera { get; set; }
+        public Vector3 position { get; set; }
+
 
         public abstract string nombreRecurso();
 
@@ -37,6 +39,12 @@ namespace TGC.Group.Model
                 D3DDevice.Instance.Device.Viewport.Height / 2);
         }
 
+        public void move(Vector3 movement)
+        {
+            this.mesh.Position = position + movement;
+            if(cilindro != null) cilindro.Center = mesh.Position;
+            if (esfera != null) esfera = new TgcBoundingSphere(mesh.Position, 180);
+        }
 
         public Recurso consumir(bool inventarioLleno)
         {

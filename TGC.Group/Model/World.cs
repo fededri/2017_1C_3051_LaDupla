@@ -30,7 +30,7 @@ namespace TGC.Group.Model
         String mediaDir;
         List<Crafteable> objects;
         private TgcMesh palmeraMesh,rocaMesh,arbustoMesh;
-
+        public float worldSize;
 
         public World(Vector3 terrainCenter, int size, String mediaDir)
         {
@@ -41,6 +41,8 @@ namespace TGC.Group.Model
 
             this.terrainHeightmap = mediaDir + "Heighmaps\\Heightmap3.jpg";
             this.currentScaleXZ = (79.5f / 5000) * size;
+                       
+           
             this.currentScaleY = 1f;
             this.position = terrainCenter;
             this.terrain = new TgcSimpleTerrain();
@@ -70,6 +72,11 @@ namespace TGC.Group.Model
             this.terrainPosition.X = this.position.X / this.currentScaleXZ;
             this.terrainPosition.Z = this.position.Z / this.currentScaleXZ;
             this.terrain.loadHeightmap(this.terrainHeightmap, this.currentScaleXZ, this.currentScaleY, this.terrainPosition);
+        }
+
+        public void refresh()
+        {
+            this.objects.RemoveAll(crafteable => crafteable == null);
         }
 
 
@@ -102,14 +109,19 @@ namespace TGC.Group.Model
 
         public void render()
         {
-            this.terrain.render();
-            if(objects != null && objects.Count > 0 )
-            foreach(var crafteable in objects)
-                {
-                    crafteable.render();
-                  //  if (crafteable.cilindro != null) crafteable.cilindro.render();
-                  //  if (crafteable.esfera != null) crafteable.esfera.render();
-                }
+            if (!rendered)
+            {
+                this.terrain.render();
+                if (objects != null && objects.Count > 0)
+                    foreach (var crafteable in objects)
+                    {
+                        crafteable.render();
+                        //  if (crafteable.cilindro != null) crafteable.cilindro.render();
+                        //  if (crafteable.esfera != null) crafteable.esfera.render();
+                    }
+                this.rendered = true;
+            }
+         
         }     
 
      
@@ -157,8 +169,8 @@ namespace TGC.Group.Model
 
         public void move(Vector3 distance)
         {
-            //this.setPosition(this.position + distance);
-            //this.objects.ForEach(crafteable => { crafteable.move(distance); });
+            this.setPosition(this.position + distance);
+            this.objects.ForEach(crafteable => { crafteable.move(distance); });
         }
 
         public void setPosition(Vector3 position)

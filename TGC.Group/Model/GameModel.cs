@@ -73,9 +73,12 @@ namespace TGC.Group.Model
         private Personaje personaje;
         private List<MySimpleTerrain> terrains;
         private  World[][] worlds;
+        private World[][] savedWorlds;
         private int worldSize = 7500;
         private World currentWorld;
-
+        private TgcBoxDebug box;
+        private int flag = 0;
+        int sectorToRender;
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -120,7 +123,8 @@ namespace TGC.Group.Model
             personaje.agregarRecurso(botellaAgua);          
                     
             loadWorld();
-         
+
+            box = new TgcBoxDebug();
             
             cam = new TgcFpsCamera(new Vector3(0, 150f, 0), Input);
             cam.currentworld = currentWorld;
@@ -138,6 +142,10 @@ namespace TGC.Group.Model
             worlds[0] = new World[3];
             worlds[1] = new World[3];
             worlds[2] = new World[3];
+            savedWorlds = new World[3][];
+            savedWorlds[0] = new World[3];
+            savedWorlds[1] = new World[3];
+            savedWorlds[2] = new World[3];
 
             int off = 0;
 
@@ -151,7 +159,10 @@ namespace TGC.Group.Model
             worlds[2][1] = new World(new Vector3(0, 0, -(worldSize- off)), worldSize, MediaDir);
             worlds[2][2] = new World(new Vector3(worldSize  - off, 0, -(worldSize- off)), worldSize, MediaDir);
 
-            currentWorld = worlds[0][0];
+
+            currentWorld = worlds[1][1];
+
+          
         }
 
       
@@ -277,13 +288,19 @@ namespace TGC.Group.Model
                 }
             }
 
-           return null;
+           return currentWorld;
         }
         private bool estaDentroDelWorld(int worldSize, World world, Vector3 position)
         {
             /*  return (position.X <= (world.position.X + worldSize) && position.X >= (world.position.X + worldSize)
                   && position.Z <= (world.position.Z + worldSize) && position.Z >= (world.position.Z + worldSize)
                   );*/
+            float limiteSuperiorX, limiteInferiorX, limiteSuperiorZ, limiteInferiorZ;
+            limiteSuperiorX = world.position.X + (worldSize / 2);
+            limiteInferiorX = world.position.X - (worldSize / 2);
+            limiteSuperiorZ = world.position.Z + (worldSize / 2);
+
+
             return (position.X >= world.position.X  && position.X <= (world.position.X + worldSize)
                 && position.Z <= world.position.Z && position.Z >= (world.position.Z - worldSize));
         }
@@ -298,9 +315,14 @@ namespace TGC.Group.Model
             PreUpdate();
 
             GuiController.Instance.ElapsedTime = ElapsedTime;
-            currentWorld = calculateCurrentWorld(cam.positionEye);
+            //currentWorld = calculateCurrentWorld(cam.positionEye);
             cam.currentworld = currentWorld;
 
+            box.PMin = new Vector3(-7500, 0, 0);
+            box.PMax = new Vector3(0, 100, 0);
+            box.Thickness = 5f;
+            box.Color = Color.Red;
+            box.updateValues();
             //Capturar Input teclado
             if (Input.keyPressed(Key.F))
             {
@@ -355,7 +377,8 @@ namespace TGC.Group.Model
             worlds[2][1].update(Camara.Position, cam);
             worlds[2][2].update(Camara.Position, cam);
             Camara.UpdateCamera(ElapsedTime);
-            currentWorld =  calculateCurrentWorld(cam.positionEye);    
+
+            
             //CheckTerrenoSegunPos(cam.positionEye);
             //mostrar posicion actual
             string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
@@ -374,7 +397,86 @@ namespace TGC.Group.Model
             }
         }
 
-   
+
+        public void refreshWorlds()
+        {
+            Vector3 logicPosition = cam.positionEye - currentWorld.position;
+
+            int size = worldSize / 2;
+            if (logicPosition.X > size)
+            {
+                Vector3 newPosition = cam.positionEye;
+                newPosition.X = -size;
+
+                copyWorlds();
+                for (int i = 0; i <= 2; i++)
+                {
+                    savedWorlds[i][0].move(new Vector3(size * 6, 0, 0));
+                    worlds[i][2] = savedWorlds[i][0];
+                    worlds[i][1] = savedWorlds[i][2];
+                    worlds[i][0] = savedWorlds[i][1];
+                }
+            }
+            if (logicPosition.X < -size)
+            {
+                flag = 1;
+                Vector3 newPosition = cam.positionEye;
+                newPosition.X = size;
+                copyWorlds();
+                for (int i = 0; i <= 2; i++)
+                {
+                    savedWorlds[i][2].move(new Vector3(size * -6, 0, 0));
+                    worlds[i][2] = savedWorlds[i][1];
+                    worlds[i][1] = savedWorlds[i][0];
+                    worlds[i][0] = savedWorlds[i][2];
+                }
+            }
+            if (logicPosition.Z > size)
+            {
+                flag = 1;
+                Vector3 newPosition = cam.positionEye;
+                newPosition.Z = -size;
+                copyWorlds();
+
+                for (int i = 0; i <= 2; i++)
+                {
+                    savedWorlds[2][i].move(new Vector3(0, 0, size * 6));
+                    worlds[0][i] = savedWorlds[2][i];
+                    worlds[1][i] = savedWorlds[0][i];
+                    worlds[2][i] = savedWorlds[1][i];
+                }
+            }
+            if (logicPosition.Z < -size)
+            {
+                flag = 1;
+                Vector3 newPosition = cam.positionEye;
+                newPosition.Z = size;
+                copyWorlds();
+                for (int i = 0; i <= 2; i++)
+                {
+                    savedWorlds[0][i].move(new Vector3(0, 0, size * -6));
+                    worlds[1][i] = savedWorlds[2][i];
+                    worlds[2][i] = savedWorlds[0][i];
+                    worlds[0][i] = savedWorlds[1][i];
+                }
+            }
+
+            currentWorld = worlds[1][1];
+            currentWorld.refresh();
+        }
+
+
+        public void copyWorlds()
+        {
+            for (int i = 0; i <= 2; i++)
+            {
+                for (int j = 0; j <= 2; j++)
+                {
+                    savedWorlds[i][j] = worlds[i][j];
+                }
+            }
+        }
+
         public override void Render()
         {
             //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
@@ -385,18 +487,12 @@ namespace TGC.Group.Model
            {
                terrain.render();
            }*/
-            worlds[0][0].render();
-            worlds[0][1].render();
-            worlds[0][1].render();
-            worlds[1][0].render();
-            worlds[1][1].render();
-            worlds[1][2].render();
-            worlds[2][0].render();
-            worlds[2][1].render();
-            worlds[2][2].render();
+            refreshWorlds();
+            renderWorlds();
 
 
             hud.render();
+            box.render();
             
         
           
@@ -442,6 +538,56 @@ namespace TGC.Group.Model
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();
+        }
+
+        public void renderWorlds()
+        {
+            for (int i = 0; i <= 2; i++)
+            {
+                for (int j = 0; j <= 2; j++)
+                {
+                    worlds[i][j].rendered = false;
+                }
+
+            }
+
+            int constante = -200;
+            Vector3 viewDir = new Vector3(cam.directionView.X, 0, cam.directionView.Z);
+            Vector3 logicPosition = cam.positionEye - currentWorld.position;
+            Vector3 personajePosition = cam.positionEye;
+            worlds[1][1].render();       
+
+            if ((viewDir.X > constante && viewDir.Z > constante) || sectorToRender == 1)
+            {
+                sectorToRender = 1;
+                worlds[0][1].render();
+                worlds[0][2].render();
+                worlds[1][2].render();
+            }
+
+            if ((viewDir.X < -constante && viewDir.Z > constante) || sectorToRender == 2)
+            {
+                sectorToRender = 2;
+                worlds[0][1].render();
+                worlds[0][0].render();
+                worlds[1][0].render();
+            }
+
+            if ((viewDir.X > constante && viewDir.Z < -constante) || sectorToRender == 3)
+            {
+                sectorToRender = 3;
+                worlds[1][2].render();
+                worlds[2][1].render();
+                worlds[2][2].render();
+            }
+
+            if ((viewDir.X < -constante && viewDir.Z < -constante) || sectorToRender == 4)
+            {
+                sectorToRender = 4;
+                worlds[1][0].render();
+                worlds[2][0].render();
+                worlds[2][1].render();
+            }
         }
 
         /// <summary>
