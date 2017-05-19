@@ -40,12 +40,11 @@ namespace TGC.Group.Model
             Name = Game.Default.Name;
             Description = Game.Default.Description;
         }
-
-        private TgcPlane suelo;
+        
         //Caja que se muestra en el ejemplo.
         private TgcBox Box { get; set; }
 
-        private TgcMesh palmeraMesh;
+      
 
         //Mesh de TgcLogo.
         private TgcMesh Mesh { get; set; }
@@ -58,7 +57,6 @@ namespace TGC.Group.Model
         private List<TgcPlane> transicionesPastoArena;
         private List<TgcMesh> arbustos;
         private List<TgcPlane> planosAgua;
-        private TgcSkyBox skyBox;
         private float MAX_DIST_A_OBJ_CONSUMIBLE = 300f;
        
         
@@ -77,6 +75,7 @@ namespace TGC.Group.Model
         private int worldSize = 7500;
         private World currentWorld;
         private int flag = 0;
+        private LDSkyBox[] skyBoxs;
         int sectorToRender;
 
         //Boleano para ver si dibujamos el boundingbox
@@ -90,9 +89,7 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Init()
         {
-            skyBox = new TgcSkyBox();
-            skyBox.Center = new Vector3(0, 0, 0);
-            skyBox.Size = new Vector3(20000, 10000,20000);
+            
             hud = new Hud.Hud(MediaDir + "Hud\\");
             personaje = new Personaje(hud);
 
@@ -101,15 +98,14 @@ namespace TGC.Group.Model
             terrains = new List<MySimpleTerrain>();
 
             var texturesPath = MediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
-            //Configurar las texturas para cada una de las 6 caras
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "lostatseaday_up.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "lostatseaday_dn.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "lostatseaday_lf.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "lostatseaday_rt.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "lostatseaday_bk.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "lostatseaday_ft.jpg");
-            skyBox.SkyEpsilon = 20f;
-            skyBox.Init();
+            //Configurar las texturas para cada una de las 6 caras         
+            skyBoxs = new LDSkyBox[4];
+            for (int i = 0; i < 4; i++) skyBoxs[i] = new LDSkyBox();
+            skyBoxs[0].horario("maniana"); //cambiarlo "maniana" "dia" "tarde" "noche"
+            skyBoxs[1].horario("dia"); //cambiarlo "maniana" "dia" "tarde" "noche"
+            skyBoxs[2].horario("tarde"); //cambiarlo "maniana" "dia" "tarde" "noche"
+            skyBoxs[3].horario("noche"); //cambiarlo "maniana" "dia" "tarde" "noche"
+            for (int i = 0; i < 4; i++) skyBoxs[i].init(MediaDir);
 
             //Device de DirectX para crear primitivas.
             var d3dDevice = D3DDevice.Instance.Device;
@@ -296,6 +292,8 @@ namespace TGC.Group.Model
                 && position.Z <= world.position.Z && position.Z >= (world.position.Z - worldSize));
         }
 
+    
+
         /// <summary>
         ///     Se llama en cada frame.
         ///     Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones
@@ -331,27 +329,24 @@ namespace TGC.Group.Model
             Frustum.updateVolume(D3DDevice.Instance.Device.Transform.View,
             D3DDevice.Instance.Device.Transform.Projection);
 
-            if (cam!= null)
-            skyBox.Center = cam.positionEye;
+            GuiController.Instance.agregarTiempoHorario(ElapsedTime);
+            skyBoxs[GuiController.Instance.horaDelDia].update(cam.positionEye);
+           
 
-            GuiController.Instance.agregartiempoAtimerClima(ElapsedTime);
+           
 
             switch (GuiController.Instance.horarioActual)
             {
                 case 0:
-                    skyBox.Color = Color.Cyan;
-                   // skyBox.Init();
+                 
                     break;
 
                 case 1:
-
-                    skyBox.Color = Color.OrangeRed;
-                   // skyBox.Init();
+                 
                     break;
 
                 case 2:
-                    skyBox.Color = Color.DarkTurquoise;
-                   // skyBox.Init();
+                    
                     break;
             }
 
@@ -378,7 +373,8 @@ namespace TGC.Group.Model
 
 
 
-  
+
+     
 
 
         public void refreshWorlds()
@@ -513,7 +509,7 @@ namespace TGC.Group.Model
                 
             }
 
-            skyBox.render();
+            skyBoxs[GuiController.Instance.horaDelDia].renderLdSkyBox();
 
 
 
@@ -587,7 +583,9 @@ namespace TGC.Group.Model
             worlds[2][0].dispose();
             worlds[2][1].dispose();
             worlds[2][2].dispose();
-            skyBox.dispose();
+
+            for (int i = 0; i < 4; i++)
+                skyBoxs[i].dispose();
             hud.dispose();
         }
     }

@@ -16,24 +16,32 @@ namespace TGC.Group.Camara
         public  TgcText2D mensaje { get; set; }
         public float timerMensaje { get; set; }
         public bool mostrarMensaje;
-        private float timerClima; //timer, cada X tiempo cambiamos el clima y horario
+        private float timerHorario; //timer, cada X tiempo cambiamos el clima y horario
         int maniana = 0;
         int tarde = 1;
         int noche = 2;
         public int horarioActual { get; set; }
         public bool bloquearAvance { get; set; }
+        public int horaDelDia { get; set; }
 
 
         //agrgar time segundos a timerClima
-        public void agregartiempoAtimerClima(float time)
+        public void agregarTiempoHorario(float time)
         {
-            timerClima += time;
-            if(timerClima >= (5)) // 5 minutos
+
+            if(timerHorario > 10)
             {
-                if (horarioActual == noche) horarioActual = maniana;
-                else horarioActual += 1;
-                timerClima = 0;
-            }
+                timerHorario = 0;
+                if (horaDelDia < 3)
+                {
+                    horaDelDia++;
+                }
+                else
+                {
+                    horaDelDia = 0; 
+                }
+            }else
+            timerHorario += time;
         }
 
         public bool getMostrarMensaje()
