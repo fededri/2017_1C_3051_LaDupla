@@ -187,7 +187,7 @@ namespace TGC.Group.Camara
                 var positionEyeMoveVector = moveVector;
                 positionEyeMoveVector += cameraRotatedPositionEye;
 
-                var rotated = cameraRotatedPositionEye;
+                rotated = cameraRotatedPositionEye;
 
                 
                 positionEye += rotated;
@@ -200,13 +200,15 @@ namespace TGC.Group.Camara
 
                 var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
                 var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
-      
+            rotated = cameraRotatedUpVector;
             
            
             base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
 
  
         }
+
+        public Vector3 rotated { get; set; }
 
         /// <summary>
         ///     se hace override para actualizar las posiones internas, estas seran utilizadas en el proximo update.

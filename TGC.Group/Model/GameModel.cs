@@ -77,6 +77,7 @@ namespace TGC.Group.Model
         private int flag = 0;
         private LDSkyBox[] skyBoxs;
         int sectorToRender;
+      
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -91,7 +92,7 @@ namespace TGC.Group.Model
         {
             
             hud = new Hud.Hud(MediaDir + "Hud\\");
-            personaje = new Personaje(hud);
+            personaje = new Personaje(hud,MediaDir);
 
             objetosABorrar = new List<Crafteable>();
             objetos = new List<Crafteable>();
@@ -122,12 +123,19 @@ namespace TGC.Group.Model
             cam = new TgcFpsCamera(new Vector3(0, 150f, 0), Input);
             cam.currentworld = currentWorld;
             Camara = cam;
+            personaje.cam = cam;
 
-            Gui.Instance.D3dInput = Input;           
+            Gui.Instance.D3dInput = Input;
             ///Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
+
+            
         
 
         }
+
+        
+
+      
 
         private void loadWorld()
         {
@@ -361,8 +369,8 @@ namespace TGC.Group.Model
             worlds[2][1].update(Camara.Position, cam);
             worlds[2][2].update(Camara.Position, cam);
             Camara.UpdateCamera(ElapsedTime);
-
-            
+            personaje.update();   
+                        
             
             //mostrar posicion actual
            /* string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
@@ -505,8 +513,7 @@ namespace TGC.Group.Model
             }
 
             skyBoxs[Gui.Instance.horaDelDia].renderLdSkyBox();
-
-
+            personaje.render();
 
             //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
             PostRender();
