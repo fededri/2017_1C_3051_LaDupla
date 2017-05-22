@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
 using TGC.Core.SceneLoader;
+using TGC.Core.Shaders;
 using TGC.Core.Terrain;
 using TGC.Group.Camara;
 using TGC.Group.InventarioYObjetos;
@@ -29,7 +30,7 @@ namespace TGC.Group.Model
         Random rnd = new Random();
         String mediaDir;
         List<Crafteable> objects;
-        private TgcMesh palmeraMesh,rocaMesh,arbustoMesh;
+        private TgcMesh palmeraMesh,palmera2Mesh,rocaMesh,arbustoMesh;
         public float worldSize;
 
         public World(Vector3 terrainCenter, int size, String mediaDir)
@@ -55,12 +56,16 @@ namespace TGC.Group.Model
                 loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Vegetacion\\Palmera\\Palmera-TgcScene.xml");
             var rocaScene = loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Vegetacion\\Roca\\Roca-TgcScene.xml");
             var arbustoScene = loader.loadSceneFromFile(mediaDir + "\\MeshCreator\\Meshes\\Vegetacion\\Planta2\\Planta2-TgcScene.xml");
+            var palmera2Scene = loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Vegetacion\\Pino\\Pino-TgcScene.xml");
 
             arbustoMesh = arbustoScene.Meshes[0];
             rocaMesh = rocaScene.Meshes[0];
             palmeraMesh = palmeraScene.Meshes[0];
 
-          
+           
+            palmera2Mesh = palmera2Scene.Meshes[0];
+
+            palmera2Mesh.AlphaBlendEnable = true;
 
             this.objects = new List<Crafteable>();
             crearPalmeras();
@@ -250,7 +255,7 @@ namespace TGC.Group.Model
                 }
                 else
                 {
-                    instance.Scale = new Vector3(1f, 1f, 1f);
+                    instance.Scale = new Vector3(2f, 2f, 2f);
                     Arbusto arbustoObj = new Arbusto(instance);
                     objects.Add(arbustoObj);
                 }
@@ -282,21 +287,71 @@ namespace TGC.Group.Model
         }
 
 
+        public bool estaLaPosicionDisponible(Vector3 pos)
+        {
+            foreach(var obj in objects)
+            {
+                   if(obj.position.X == pos.X && obj.position.Z == pos.Z)
+                {
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        public Vector3 checkPosicion(float x, float z)
+        {
+            if(estaLaPosicionDisponible(new Vector3(x, 0, z)))
+            {
+                return new Vector3(x, calcularAltura(x, z), z);
+            }else
+            {
+                return checkPosicion(x + 100, z + 100);
+            }
+        }
+
         public void crearPalmeras()
         {
             float offsetX, offsetZ;
             var random = new Random();
             int a = (size / 2) - 400;
-           
 
             for (var i = 0; i < 20; i++)
             {
                 offsetX = random.Next((int)position.X, (int) position.X + (size - a));
                 offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z );
-                var instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);
-                instance.move(offsetX, calcularAltura(offsetX, offsetZ), offsetZ);
+                
+
+                var pinoOPalmera = random.NextDouble();
+                TgcMesh instance = null;
+                if(pinoOPalmera <= 0.5)
+                {
+                    instance = palmeraMesh.createMeshInstance(palmeraMesh.Name + i);
+                }
+                else
+                    instance = palmera2Mesh.createMeshInstance(palmera2Mesh.Name + i);
+
+
+                instance.AlphaBlendEnable = true;
+                instance.move(checkPosicion(offsetX,offsetZ));
                 instance.AutoTransformEnable = true;
-                instance.Scale = new Vector3(3f, 5f, 3f);
+                
+               
+                if(i % 2 == 0)
+                {
+                    var XZOffset = random.NextDouble() + 1.5f;
+                    instance.Scale = new Vector3(3f + (float)XZOffset, 5f + (float)XZOffset, 3f + (float)XZOffset);
+                }
+                else
+                {
+                    var XZOffset = random.NextDouble();
+                    var YOffset = random.NextDouble() + 1f;
+                    instance.Scale = new Vector3(3f - (float)XZOffset, 5f - (float)(YOffset), 3f - (float)XZOffset);
+                }
+                   
+
+
                 var collisionableCylinder = new TgcBoundingCylinder(new Vector3(offsetX, 0, offsetZ), 60, 800);
                 collisionableCylinder.setRenderColor(Color.Green);
                 var palmera = new Palmera(instance);

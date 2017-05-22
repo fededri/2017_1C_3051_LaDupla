@@ -24,15 +24,14 @@ namespace TGC.Group.Model
                 setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "lostatseaday_rt.jpg");
                 setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "lostatseaday_bk.jpg");
                 setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "lostatseaday_ft.jpg");
-                SkyEpsilon = 1f;
-            //this.AlphaBlendEnable = true;
+                SkyEpsilon = 1f;          
 
             base.Init();
 
             }
 
 
-            //public TgcMesh[] faces;
+            
 
             public void horario(string horario)
             {
@@ -40,8 +39,8 @@ namespace TGC.Group.Model
                 {
                     case "maniana": this.Color = Color.Coral; break;
                     case "dia": this.Color = Color.Transparent; break;
-                    case "tarde": this.Color = Color.OrangeRed; break;
-                    case "noche": this.Color = Color.DarkGray; break;
+                    case "tarde": this.Color = Color.DarkOrange; break;
+                    case "noche": this.Color = Color.DarkSlateBlue; break;
                 }
             }
 
@@ -49,10 +48,8 @@ namespace TGC.Group.Model
             public void cambiarHorario()
             {
                 this.Color = Color.Red;
-                //this.updateValues();
-
                 string horarioActual = Color.ToString();
-
+        
                 switch (horarioActual)
                 {
                     case "Coral": this.horario("dia"); break;
@@ -60,6 +57,7 @@ namespace TGC.Group.Model
                     case "DarkGoldenrod": this.horario("noche"); break;
                     case "DarkBlue": this.horario("maniana"); break;
                 }
+               
 
 
             }

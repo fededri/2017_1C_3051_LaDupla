@@ -67,18 +67,18 @@ namespace TGC.Group.Model
                 {
                     if (!inventarioLleno)
                     {
-                        GuiController.Instance.mensaje.Text = "Obtuviste " + nombreRecurso();
+                        Gui.Instance.mensaje.Text = "Obtuviste " + nombreRecurso();
                     }
-                    else GuiController.Instance.mensaje.Text = "Inventario lleno!";
-                    GuiController.Instance.mensaje.Color = Color.Gold;
+                    else Gui.Instance.mensaje.Text = "Inventario lleno!";
+                    Gui.Instance.mensaje.Color = Color.Gold;
                     mostrarMensaje = true;
                     return dameTuRecurso();
                 }else 
                 {
                 
-                    GuiController.Instance.mensaje.Text = "No has obtenido " + nombreRecurso();
-                    GuiController.Instance.mensaje.Color = Color.Red;
-                    GuiController.Instance.
+                    Gui.Instance.mensaje.Text = "No has obtenido " + nombreRecurso();
+                    Gui.Instance.mensaje.Color = Color.Red;
+                    Gui.Instance.
                     mostrarMensaje = true;
                     return null;
                 }
@@ -86,8 +86,8 @@ namespace TGC.Group.Model
             }
             else
             {
-                GuiController.Instance.mensaje.Text = "Le erraste!";
-                GuiController.Instance.mensaje.Color = Color.BlueViolet;
+                Gui.Instance.mensaje.Text = "Le erraste!";
+                Gui.Instance.mensaje.Color = Color.BlueViolet;
                 mostrarMensaje = true;
                 //el objeto no se destruira y no devuelve madera
                 destruirse = false;
@@ -98,10 +98,10 @@ namespace TGC.Group.Model
 
         public virtual void update()
         {
-            timer += GuiController.Instance.ElapsedTime;
+            timer += Gui.Instance.ElapsedTime;
             if (mostrarMensaje)
             {
-                GuiController.Instance.setMostrarMensaje(true);
+                Gui.Instance.setMostrarMensaje(true);
             }
             mostrarMensaje = false;
         }

@@ -52,7 +52,7 @@ namespace TGC.Group.Camara
         bool moveDownPressed = false;
 
         Microsoft.DirectX.Direct3D.Device d3dDevice = D3DDevice.Instance.Device;
-        Human personaje;
+     
 
 
         #endregion declaraciones
@@ -84,10 +84,9 @@ namespace TGC.Group.Camara
         /// Crea la cámara con valores iniciales.
         /// Aceleración desactivada por Default
         /// </summary>
-        public LDCamaraFps(Human personaje)
+        public LDCamaraFps()
         {
             resetValues();
-            this.personaje = personaje;
             enable = true;
         }
 
@@ -337,7 +336,6 @@ namespace TGC.Group.Camara
         {
             //log.logVector3(pos, Color.Red);
             eye = pos;
-            //personaje.setPosition(pos);
             //eye.Y += alturaPreset;
             //log.logVector3(eye, Color.Orange);
             reconstructViewMatrix(false);
@@ -353,8 +351,8 @@ namespace TGC.Group.Camara
             {
                 return;
             }
-            float elapsedTimeSec = GuiController.Instance.ElapsedTime;
-            TgcD3dInput d3dInput = GuiController.Instance.D3dInput;
+            float elapsedTimeSec = Gui.Instance.ElapsedTime;
+            TgcD3dInput d3dInput = Gui.Instance.D3dInput;
      
 
             float heading = 0.0f;
@@ -386,7 +384,7 @@ namespace TGC.Group.Camara
                 {
                     moveForwardsPressed = true;
                     currentVelocity = new Vector3(currentVelocity.X, currentVelocity.Y, 0.0f);
-                    float elapsedTimeSec = GuiController.Instance.ElapsedTime;
+                    float elapsedTimeSec = Gui.Instance.ElapsedTime;
                 }
 
                 direction.Z += 1.0f;
@@ -546,7 +544,6 @@ namespace TGC.Group.Camara
                     displacement.Z = 0.0f;
 
                 move(displacement.X, displacement.Y, displacement.Z);
-                //personaje.move(displacement);
             }
 
             // Continuously update the camera's velocity vector even if the camera
@@ -637,7 +634,6 @@ namespace TGC.Group.Camara
             auxEye += forwards * dz;
 
             setPosition(auxEye);
-            //personaje.movete(auxEye);
         }
 
 

@@ -133,7 +133,7 @@ namespace TGC.Group.Hud
                     var cantidad = cuantosObjetosDeEsteTipoHay(item.tipo);
                         if(cantidad >= maxItemsPorSlot)
                     {
-                        GuiController.Instance.mensaje.Text = "No hay mas espacio para este recurso";
+                        Gui.Instance.mensaje.Text = "No hay mas espacio para este recurso";
                         return null;
                     }else
                     {

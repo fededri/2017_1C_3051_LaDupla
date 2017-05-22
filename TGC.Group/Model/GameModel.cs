@@ -123,7 +123,7 @@ namespace TGC.Group.Model
             cam.currentworld = currentWorld;
             Camara = cam;
 
-            GuiController.Instance.D3dInput = Input;           
+            Gui.Instance.D3dInput = Input;           
             ///Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
         
 
@@ -303,7 +303,7 @@ namespace TGC.Group.Model
         {
             PreUpdate();
 
-            GuiController.Instance.ElapsedTime = ElapsedTime;
+            Gui.Instance.ElapsedTime = ElapsedTime;
             cam.currentworld = currentWorld;
 
             
@@ -329,13 +329,13 @@ namespace TGC.Group.Model
             Frustum.updateVolume(D3DDevice.Instance.Device.Transform.View,
             D3DDevice.Instance.Device.Transform.Projection);
 
-            GuiController.Instance.agregarTiempoHorario(ElapsedTime);
-            skyBoxs[GuiController.Instance.horaDelDia].update(cam.positionEye);
+            Gui.Instance.agregarTiempoHorario(ElapsedTime);
+            skyBoxs[Gui.Instance.horaDelDia].update(cam.positionEye);
            
 
            
 
-            switch (GuiController.Instance.horarioActual)
+            switch (Gui.Instance.horarioActual)
             {
                 case 0:
                  
@@ -461,16 +461,11 @@ namespace TGC.Group.Model
             //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
             PreRender();
             D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-            //suelo.render();
-            /*foreach(var terrain in terrains)
-           {
-               terrain.render();
-           }*/
+          
             refreshWorlds();
             renderWorlds();
 
-            hud.render();
-            
+            hud.render();           
         
           
             foreach (var objeto in objetos)
@@ -502,14 +497,14 @@ namespace TGC.Group.Model
             
            
 
-            if (GuiController.Instance.mostrarMensaje && GuiController.Instance.timerMensaje < 0.8)
+            if (Gui.Instance.mostrarMensaje && Gui.Instance.timerMensaje < 0.8)
             {
-                GuiController.Instance.mensaje.render();
-                GuiController.Instance.timerMensaje += ElapsedTime;
+                Gui.Instance.mensaje.render();
+                Gui.Instance.timerMensaje += ElapsedTime;
                 
             }
 
-            skyBoxs[GuiController.Instance.horaDelDia].renderLdSkyBox();
+            skyBoxs[Gui.Instance.horaDelDia].renderLdSkyBox();
 
 
 

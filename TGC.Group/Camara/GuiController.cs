@@ -10,16 +10,13 @@ using TGC.Core.Text;
 
 namespace TGC.Group.Camara
 {
-    class GuiController
+    class Gui
     {
-        private static GuiController instance;
+        private static Gui instance;
         public  TgcText2D mensaje { get; set; }
         public float timerMensaje { get; set; }
         public bool mostrarMensaje;
-        private float timerHorario; //timer, cada X tiempo cambiamos el clima y horario
-        int maniana = 0;
-        int tarde = 1;
-        int noche = 2;
+        private float timerHorario; //timer, cada X tiempo cambiamos el clima y horario       
         public int horarioActual { get; set; }
         public bool bloquearAvance { get; set; }
         public int horaDelDia { get; set; }
@@ -58,21 +55,21 @@ namespace TGC.Group.Camara
          
         
 
-        private GuiController() { }
+        private Gui() { }
 
-        public static GuiController Instance
+        public static Gui Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new GuiController();
+                    instance = new Gui();
                     instance.mensaje = new TgcText2D();
                     instance.mensaje.Align = TgcText2D.TextAlign.LEFT;
                     instance.mensaje.Color = Color.BlueViolet;
                     instance.mensaje.Position = new Point(D3DDevice.Instance.Width /2, D3DDevice.Instance.Height /2);
                     instance.mensaje.Size = new Size(500, 200);
-                    instance.mensaje.changeFont(new Font("TimesNewRoman", 25, FontStyle.Bold | FontStyle.Italic));
+                    instance.mensaje.changeFont(new Font("TimesNewRoman", 25, FontStyle.Bold));
                 }
                 return instance;
             }
