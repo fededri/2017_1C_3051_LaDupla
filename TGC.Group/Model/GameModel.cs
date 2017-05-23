@@ -369,7 +369,7 @@ namespace TGC.Group.Model
             worlds[2][1].update(Camara.Position, cam);
             worlds[2][2].update(Camara.Position, cam);
             Camara.UpdateCamera(ElapsedTime);
-            personaje.update();   
+            personaje.update(ElapsedTime);   
                         
             
             //mostrar posicion actual

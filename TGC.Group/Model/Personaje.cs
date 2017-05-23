@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.SceneLoader;
+using TGC.Core.Utils;
 using TGC.Group.Camara;
 
 namespace TGC.Group.Model
@@ -24,14 +25,15 @@ namespace TGC.Group.Model
         public Vector3 lookAt;
         public TgcFpsCamera cam { get; set; }
         public Vector3 previousRotated { get; set; }
+        private float previousRot;
+        public float previousOffsetZ, previousOffsetX;
+        private float elapsedTime;
         public Vector3 userPosition {
             get { return _userPosition; }
-            set {if(value != _userPosition)
-                {
+            set {
+                
                     _userPosition = value;
-                    updateHacha();
-                }
-              
+                    updateHacha();              
             } }
 
         public Personaje(Hud.Hud hud, String dir)
@@ -41,13 +43,11 @@ namespace TGC.Group.Model
             this.mediaDir = dir;
             cargarHacha();
         }
-
-
-        public void update()
+       
+        public void update(float t)
         {
-            if (previousRotated == cam.rotated) return;
-            _userPosition = cam.positionEye;
-
+            elapsedTime = t;
+            userPosition = cam.positionEye;
             previousRotated = cam.rotated;
             
 
@@ -56,27 +56,79 @@ namespace TGC.Group.Model
         private void updateHacha()
         {
 
-            Vector3 moveVector = cam.rotated;
-            hachaInstance.Position = new Vector3(userPosition.X, userPosition.Y - 50, userPosition.Z);
+            Vector3 moveVector = new Vector3(0, 0, 0);
+            var cosenoAlpha = Vector3.Dot(userPosition, cam.rotated) / ((Vector3.Length(userPosition) * Vector3.Length(cam.rotated)));
+            var alpha = FastMath.Acos(cosenoAlpha);
 
-            if (cam.LookAt.X >0 )
+            Console.WriteLine("Se roto en un agulo de: " + alpha);
+            var rotation = Matrix.RotationYawPitchRoll(alpha, 0, 0);
+
+            /*
+            var translation = Matrix.Translation(moveVector);
+            var movimientoFinal = translation;
+
+            var vec4 = Vector3.Transform(hachaInstance.Position, movimientoFinal);*/
+
+            float offsetX = 0, offsetZ = 0;
+
+            var substract = Vector3.Subtract(cam.LookAt, userPosition);
+
+            if (substract.X > 0)
             {
-                moveVector.X += 50;
-            }else if(cam.LookAt.X <0)
+                offsetX = 10;
+                // if (previousOffsetX < 0)
+                //   hachaInstance.rotateY((float)Math.PI);
+            }
+            else
             {
-                moveVector.X += -50;
+                offsetX = -10;
+                /* if (previousOffsetX > 0)
+                     hachaInstance.rotateY((float)Math.PI);*/
             }
 
-             if (cam.LookAt.Z > 0)
-             { 
-                 moveVector.Z += -50;
-             }
-             else moveVector.Z += 50;
+            if (substract.Z > 0)
+            {
+                offsetZ = 10;
+                /*  if(previousOffsetZ < 0)
+                  hachaInstance.rotateY((float)Math.PI);*/
 
+            }
+            else
+            {
+                offsetZ = -10;
+                /* if(previousOffsetZ > 0)
+                 hachaInstance.rotateY(-(float)Math.PI);*/
 
-            hachaInstance.move(moveVector);
-           
+            }
+            previousOffsetZ = offsetZ;
+            previousOffsetX = offsetX;
+
+            hachaInstance.Position = new Vector3(cam.LookAt.X + offsetX, userPosition.Y - 50, cam.LookAt.Z + offsetZ);
+
+            
+            if( previousRot != cam.rightleftRot && previousRot != cam.leftrightRot)
+            {
+                if (cam.rightleftRot > 0 && cam.leftrightRot > 0) return;
+                double rot = 0;
+                if(cam.rightleftRot > 0 || 1==1)
+                {
+                    rot = cam.rightleftRot * elapsedTime;
+                    previousRot = cam.rightleftRot;                  
+                } else if(cam.leftrightRot > 0)
+                {
+                    rot = cam.leftrightRot * elapsedTime;
+                    previousRot = cam.leftrightRot;
+                }
+              
+                
+               // hachaInstance.rotateY((float)rot);  
+            }
+            
+
+                     
         }
+
+       
         
 
 
@@ -93,17 +145,17 @@ namespace TGC.Group.Model
         }
 
 
-        public void cargarHacha()
+        public void cargarHacha() 
         {
             var loader = new TgcSceneLoader();
             var hachaScene = loader.loadSceneFromFile(mediaDir + "MeshCreator\\Meshes\\Armas\\Hacha\\Hacha-TgcScene.xml");
             hacha = hachaScene.Meshes[0];
             var instance = hacha.createMeshInstance(hacha.Name);
             instance.AutoTransformEnable = true;
-            instance.Scale = new Vector3(5f, 3f, 5f);
+            instance.Scale = new Vector3(3f, 3f, 3f);
             instance.move(-30, 150f, 10);            
             hachaInstance = instance;
-            hachaInstance.rotateY((float)Math.PI);
+            hachaInstance.rotateY((float)(FastMath.PI));
 
         }
 

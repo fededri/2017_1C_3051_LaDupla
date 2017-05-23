@@ -21,14 +21,15 @@ namespace TGC.Group.Camara
         private readonly Point mouseCenter; //Centro de mause 2D para ocultarlo.
 
         //Se mantiene la matriz rotacion para no hacer este calculo cada vez.
-        private Matrix cameraRotation;
+        public Matrix cameraRotation;
 
         //Direction view se calcula a partir de donde se quiere ver con la camara inicialmente. por defecto se ve en -Z.
         public Vector3 directionView;
 
         //No hace falta la base ya que siempre es la misma, la base se arma segun las rotaciones de esto costados y updown.
-        private float leftrightRot;
-        private float updownRot;
+        public float leftrightRot;
+        public float rightleftRot;
+        public float updownRot;
         public Vector3 oldPosition { get; set; }
         private bool lockCam;
         public World currentworld { get; set; }
@@ -52,6 +53,7 @@ namespace TGC.Group.Camara
             JumpSpeed = 500f;
             directionView = new Vector3(0, 0, -1);
             leftrightRot = FastMath.PI_HALF;
+            rightleftRot = FastMath.PI_HALF;
             updownRot = -FastMath.PI / 10.0f;
             cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
         }
@@ -173,7 +175,8 @@ namespace TGC.Group.Camara
                 if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                 {
                     leftrightRot -= -Input.XposRelative * RotationSpeed;
-                    updownRot -= Input.YposRelative * RotationSpeed;
+                   updownRot -= Input.YposRelative * RotationSpeed;
+                    rightleftRot += Input.XposRelative * RotationSpeed;
                     //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
                     cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
                 }
@@ -197,10 +200,10 @@ namespace TGC.Group.Camara
                 //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
                 var cameraRotatedTarget = Vector3.TransformNormal(directionView, cameraRotation);
                 var cameraFinalTarget = positionEye + cameraRotatedTarget;
-
+           
                 var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
                 var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
-            rotated = cameraRotatedUpVector;
+       
             
            
             base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
