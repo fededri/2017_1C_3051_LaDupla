@@ -7,19 +7,19 @@ using TGC.Group.Model;
 
 namespace TGC.Group.InventarioYObjetos
 {
-    class Fruta : Recurso
+    class Hacha : Recurso
     {
-        public Fruta()
+        public Hacha()
         {
-            tipo = TiposRecursos.Comida;
+            tipo = TiposRecursos.Hacha;
         }
 
-        public override bool combinable(Recurso otroRecurso)
+        public override bool combinable(Recurso recurso)
         {
             return false;
         }
 
-        public override bool usar(Personaje personaje)
+         public override bool usar(Personaje personaje)
         {
             return false;
         }

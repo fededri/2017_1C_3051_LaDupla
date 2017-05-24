@@ -15,10 +15,12 @@ namespace TGC.Group.InventarioYObjetos
         public CustomSprite itemSprite {get;set;}
         public Recurso recurso { get; set; }
         public int cantidad { get; set; }
+        public ItemContainer ic { get; set; }
 
 
         public Item(Recurso r, String directorio, ItemContainer itemContainer)
         {
+            this.ic = itemContainer;
             itemSprite = new CustomSprite();
             recurso = r;
             TiposRecursos tipo = r.tipo;
@@ -47,6 +49,10 @@ namespace TGC.Group.InventarioYObjetos
 
                 case TiposRecursos.Encendedor:
 
+                    break;
+
+                case TiposRecursos.Hacha:
+                    itemSprite.Bitmap = new CustomBitmap(directorio + "axe_inv.png", D3DDevice.Instance.Device);
                     break;
 
                 default:

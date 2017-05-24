@@ -93,6 +93,7 @@ namespace TGC.Group.Model
             
             hud = new Hud.Hud(MediaDir + "Hud\\");
             personaje = new Personaje(hud,MediaDir);
+            hud.personaje = personaje;
 
             objetosABorrar = new List<Crafteable>();
             objetos = new List<Crafteable>();
@@ -115,9 +116,11 @@ namespace TGC.Group.Model
           
             var loader = new TgcSceneLoader();    
             var botellaAgua = new Botella() ;
-            botellaAgua.tieneAgua = false;
-            personaje.agregarRecurso(botellaAgua);          
-                    
+            botellaAgua.tieneAgua = true;
+            var hacha = new Hacha();
+            personaje.agregarRecurso(botellaAgua);
+            personaje.agregarRecurso(botellaAgua);
+            personaje.agregarRecurso(hacha);
             loadWorld();
             
             cam = new TgcFpsCamera(new Vector3(0, 150f, 0), Input);
@@ -126,7 +129,6 @@ namespace TGC.Group.Model
             personaje.cam = cam;
 
             Gui.Instance.D3dInput = Input;
-            ///Camara.SetCamera(human.getPosition(), human.getPosition() + new Vector3(50f, 0, 0));
 
             
         
@@ -273,6 +275,7 @@ namespace TGC.Group.Model
 
         public World calculateCurrentWorld(Vector3 position)
         {
+         
             for(int i = 0; i < 3;i++)
             {
                 for ( int j = 0; j < 3; j++)
@@ -314,19 +317,9 @@ namespace TGC.Group.Model
             Gui.Instance.ElapsedTime = ElapsedTime;
             cam.currentworld = currentWorld;
 
-            
+
             //Capturar Input teclado
-            if (Input.keyPressed(Key.F))
-            {
-                BoundingBox = !BoundingBox;
-            }
-
-            if (Input.keyPressed(Key.U))
-            {
-                checkearObjetoMasCercano(Camara.Position);
-            }
-
-        
+            escucharKeyInputs();
 
             D3DDevice.Instance.Device.Transform.Projection =
               Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
@@ -338,10 +331,7 @@ namespace TGC.Group.Model
             D3DDevice.Instance.Device.Transform.Projection);
 
             Gui.Instance.agregarTiempoHorario(ElapsedTime);
-            skyBoxs[Gui.Instance.horaDelDia].update(cam.positionEye);
-           
-
-           
+            skyBoxs[Gui.Instance.horaDelDia].update(cam.positionEye);       
 
             switch (Gui.Instance.horarioActual)
             {
@@ -369,7 +359,6 @@ namespace TGC.Group.Model
             worlds[2][1].update(Camara.Position, cam);
             worlds[2][2].update(Camara.Position, cam);
             Camara.UpdateCamera(ElapsedTime);
-            personaje.update(ElapsedTime);   
                         
             
             //mostrar posicion actual
@@ -379,6 +368,49 @@ namespace TGC.Group.Model
             GuiController.Instance.timerMensaje = 0;*/
         }
 
+
+        private void escucharKeyInputs()
+        {
+            if (Input.keyPressed(Key.F))
+            {
+                BoundingBox = !BoundingBox;
+            }
+
+            if (Input.keyPressed(Key.U))
+            {
+                checkearObjetoMasCercano(Camara.Position);
+            }
+
+            if (Input.keyPressed(Key.NumPad1))
+            {
+                hud.usarItem(1);
+            }
+
+            if (Input.keyPressed(Key.NumPad2))
+            {
+                hud.usarItem(2);
+            }
+
+            if (Input.keyPressed(Key.NumPad3))
+            {
+                hud.usarItem(3);
+            }
+
+            if (Input.keyPressed(Key.NumPad4))
+            {
+                hud.usarItem(4);
+            }
+
+            if (Input.keyPressed(Key.NumPad5))
+            {
+                hud.usarItem(5);
+            }
+
+            if (Input.keyPressed(Key.NumPad6))
+            {
+                hud.usarItem(6);
+            }
+        }
 
 
 

@@ -10,7 +10,7 @@ namespace TGC.Group.InventarioYObjetos
     class Botella : Recurso
     {
         public bool tieneAgua { get; set; }
-
+        private int reduceSed = 80;
         public Botella()
         {           
             tipo = TiposRecursos.Bebida;
@@ -19,6 +19,23 @@ namespace TGC.Group.InventarioYObjetos
         public override bool combinable(Recurso recurso)
         {
             return false;
+        }
+
+        public override bool usar(Personaje personaje)
+        {
+            if (tieneAgua)
+            {
+                if (personaje.sed > (100 - reduceSed)) personaje.sed = 100;
+                else
+                {
+                    personaje.sed += reduceSed;
+                }
+                tieneAgua = false;
+                personaje.quitarRecurso(this);
+                return true;
+            }
+            return true;
+
         }
     }
 }

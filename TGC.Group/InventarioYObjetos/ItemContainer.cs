@@ -19,6 +19,8 @@ namespace TGC.Group.InventarioYObjetos
         public bool estaDisponible { get; set; }
         public TiposRecursos tipoRecurso { get; set; }
         private int Cantidad;
+        public Recurso recurso;
+        public Hud.Hud hud;
         public int cantidad
         {
             get { return Cantidad; }
@@ -30,13 +32,15 @@ namespace TGC.Group.InventarioYObjetos
         }
         public TgcText2D textoContador;
         
-        public ItemContainer(String hudDir,int position)
+        public ItemContainer(String hudDir,int position, Hud.Hud hud)
         {
+            this.hud = hud;
             estaDisponible = true;
             sprite = new CustomSprite();
            sprite.Bitmap =  new CustomBitmap(hudDir + "inv_item.png", D3DDevice.Instance.Device);
 
             switch (position){
+                //primera fila
                 case 1:
                     sprite.Position = new Vector2(D3DDevice.Instance.Width - ((sprite.Bitmap.Width * 2) + 40), D3DDevice.Instance.Height - (sprite.Bitmap.Height + 40));
                     break;
@@ -69,5 +73,23 @@ namespace TGC.Group.InventarioYObjetos
 
         }
 
+
+        public void usarItem(Personaje personaje)
+        {
+            if (recurso == null) return; //no hay recursos en este slot 
+            var destruir = recurso.usar(personaje);
+            if (destruir)
+            {
+                cantidad--;
+                if (cantidad == 0)
+                {
+                    estaDisponible = true;
+                    tipoRecurso = TiposRecursos.NO_ASIGNADO;
+                    recurso = null;
+                }
+                hud.borrarItemEnItemContainer(this);
+             }
+
+        }
     }
 }

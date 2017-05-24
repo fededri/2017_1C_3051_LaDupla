@@ -99,6 +99,7 @@
     <Compile Include="InventarioYObjetos\Arbusto.cs" />
     <Compile Include="InventarioYObjetos\Botella.cs" />
     <Compile Include="InventarioYObjetos\Fruta.cs" />
+    <Compile Include="InventarioYObjetos\Hacha.cs" />
     <Compile Include="InventarioYObjetos\IEnums.cs" />
     <Compile Include="InventarioYObjetos\Inventory.cs" />
     <Compile Include="InventarioYObjetos\Item.cs" />

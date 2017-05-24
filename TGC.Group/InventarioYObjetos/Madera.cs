@@ -33,6 +33,11 @@ namespace TGC.Group.InventarioYObjetos
           
         }
 
-       
+        public override bool usar(Personaje personaje)
+        {
+            return false;
+        }
+
+
     }
 }

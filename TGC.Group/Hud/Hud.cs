@@ -29,6 +29,7 @@ namespace TGC.Group.Hud
         String directorio;
         public TgcText2D mensaje { get; set; }
         private const int maxItemsPorSlot = 2;
+        public Personaje personaje { get; set; }
              
 
         public Hud(String HudDir)
@@ -57,12 +58,12 @@ namespace TGC.Group.Hud
             hudSprite.Scaling = new Vector2(0.5f, 0.5f);
             hudSprite.Position = new Vector2(10, 20);
       
-            ItemContainer item1 = new ItemContainer(HudDir, 1);
-            ItemContainer item2 = new ItemContainer(HudDir, 2);
-            ItemContainer item3 = new ItemContainer(HudDir, 3);
-            ItemContainer item4 = new ItemContainer(HudDir, 4);
-            ItemContainer item5 = new ItemContainer(HudDir, 5);
-            ItemContainer item6 = new ItemContainer(HudDir, 6);
+            ItemContainer item1 = new ItemContainer(HudDir, 1,this);
+            ItemContainer item2 = new ItemContainer(HudDir, 2, this);
+            ItemContainer item3 = new ItemContainer(HudDir, 3, this);
+            ItemContainer item4 = new ItemContainer(HudDir, 4, this);
+            ItemContainer item5 = new ItemContainer(HudDir, 5, this);
+            ItemContainer item6 = new ItemContainer(HudDir, 6, this);
 
             itemsContainerSprite.Add(item1);
             itemsContainerSprite.Add(item2);
@@ -158,6 +159,24 @@ namespace TGC.Group.Hud
             return 0;
         }
 
+       public void borrarItemEnItemContainer(ItemContainer ic)
+        {
+            var index = -1;
+            for(int i = 0; i< items.Count; i++)
+            {
+                if(items[i].ic == ic )
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if(index != -1)
+            {
+                items.RemoveAt(index);
+            }
+        }
+
         public void agregarItem(Recurso recurso)
         {
 
@@ -165,6 +184,7 @@ namespace TGC.Group.Hud
             if (itemContainer == null) return;
             Item item = new Item(recurso, directorio, itemContainer);
             itemContainer.tipoRecurso = recurso.tipo;
+            itemContainer.recurso = recurso;
             itemContainer.cantidad++;
             if (itemContainer.estaDisponible)
             {
@@ -205,6 +225,10 @@ namespace TGC.Group.Hud
 
         }
 
+       public void usarItem(int position)
+        {
+            itemsContainerSprite.ElementAt(position-1).usarItem(personaje);
+        }
 
         public void dispose()
         {

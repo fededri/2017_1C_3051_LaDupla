@@ -26,7 +26,7 @@ namespace TGC.Group.Camara
         public void agregarTiempoHorario(float time)
         {
 
-            if(timerHorario > 10)
+            if(timerHorario > 60)
             {
                 timerHorario = 0;
                 if (horaDelDia < 3)

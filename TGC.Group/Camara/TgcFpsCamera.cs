@@ -8,6 +8,7 @@ using TGC.Core.Input;
 using TGC.Core.Utils;
 using TGC.Group.Shaders;
 using TGC.Group.Model;
+using System;
 
 namespace TGC.Group.Camara
 {
@@ -38,6 +39,7 @@ namespace TGC.Group.Camara
         public bool colision { get; set; }
         public Vector3 lastMoveVector { get; set; }
         private int height;
+        public float mouseX { get; set; }
 
         public TgcFpsCamera(TgcD3dInput input)    
         {
@@ -175,8 +177,7 @@ namespace TGC.Group.Camara
                 if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                 {
                     leftrightRot -= -Input.XposRelative * RotationSpeed;
-                   updownRot -= Input.YposRelative * RotationSpeed;
-                    rightleftRot += Input.XposRelative * RotationSpeed;
+                    updownRot -= Input.YposRelative * RotationSpeed;             
                     //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
                     cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
                 }

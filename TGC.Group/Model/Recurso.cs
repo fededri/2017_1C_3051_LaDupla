@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TGC.Group.Model
 {
-    public enum TiposRecursos { NO_ASIGNADO, Madera, Piedra, Comida, Bebida, Encendedor };
+    public enum TiposRecursos { NO_ASIGNADO, Madera, Piedra, Comida, Bebida, Encendedor, Hacha };
 
     public abstract class Recurso
     { 
@@ -16,5 +16,7 @@ namespace TGC.Group.Model
         public String descripcion { get; set; }
         abstract public  bool combinable(Recurso otroRecurso);
         public TiposRecursos tipo { get; set; }
+
+        abstract public bool usar(Personaje personaje);
     }
 }
