@@ -15,9 +15,34 @@ namespace TGC.Group.Model
 {
     public class Personaje
     {
+        public Personaje()
+        {
+            vida = 100;
+            sed = 100;
+            hambre = 100;
+            energia = 100;
+
+
+        }
+
+
         public int vida { get; set; }
-        public int hambre { get; set; }
-        public int sed { get; set; }
+        private int _hambre, _sed;
+
+
+        public int hambre { get { return _hambre; }
+            set {
+                _hambre = value; }
+
+        }
+        public int sed { get { return _sed; }
+            set {
+                _sed = value;
+                hud.agua.Text = "Agua: " + sed;
+                if(sed>=80 && sed < 100) { Console.WriteLine("SED ENTRE 80 y 100"); }
+                    
+                }
+        }
         public int energia { get; set; }
         private List<Recurso> recursos;
         public Hud.Hud hud;
@@ -26,6 +51,26 @@ namespace TGC.Group.Model
         public TgcFpsCamera cam { get; set; }    
         public CustomSprite hachaSprite;
         public Drawer2D drawer2D;
+        private float TIEMPO_REDUCIR_HAMBRE_SED = 10; //segundos
+        private float _timerHambreYsed;
+
+        public float timerHambreYSed {
+            get { return _timerHambreYsed; }
+            set { _timerHambreYsed = value;
+                  if(_timerHambreYsed >= TIEMPO_REDUCIR_HAMBRE_SED)
+                {
+                    if (hambre >= 10) hambre -= 10;
+                    else hambre = 0;
+
+                    if (sed >= 10) sed -= 10;
+                    else sed = 0;
+
+                    _timerHambreYsed = 0;
+                }  
+
+            }
+
+        }
 
         public Vector3 userPosition {
             get { return _userPosition; }
@@ -39,6 +84,10 @@ namespace TGC.Group.Model
             this.hud = hud;
             this.mediaDir = dir;
             drawer2D = new Drawer2D();
+            vida = 100;
+            sed = 100;
+            hambre = 100;
+            energia = 100;
             cargarHacha();
         }      
         

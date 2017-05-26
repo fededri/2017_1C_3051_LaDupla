@@ -359,7 +359,9 @@ namespace TGC.Group.Model
             worlds[2][1].update(Camara.Position, cam);
             worlds[2][2].update(Camara.Position, cam);
             Camara.UpdateCamera(ElapsedTime);
-                        
+
+            var t = personaje.timerHambreYSed;
+            personaje.timerHambreYSed = t + ElapsedTime;
             
             //mostrar posicion actual
            /* string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
@@ -512,8 +514,7 @@ namespace TGC.Group.Model
             {
                 objeto.render();
                 if (BoundingBox)
-                    objeto.mesh.BoundingBox.render();
-        
+                    objeto.mesh.BoundingBox.render();        
            }
 
             //borrado de objetos

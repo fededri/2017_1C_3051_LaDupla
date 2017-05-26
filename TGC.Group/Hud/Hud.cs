@@ -17,7 +17,7 @@ namespace TGC.Group.Hud
     public class Hud
     {
         TgcText2D vida;
-        TgcText2D agua;
+        public TgcText2D agua;
         TgcText2D energia;
         TgcText2D hambre;
         TgcText2D inventarioString;
