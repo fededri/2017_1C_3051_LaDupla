@@ -15,62 +15,110 @@ namespace TGC.Group.Model
 {
     public class Personaje
     {
-        public Personaje()
-        {
-            vida = 100;
-            sed = 100;
-            hambre = 100;
-            energia = 100;
+       
+        private List<Recurso> recursos;
+        public Hud.Hud hud;
+        public String mediaDir { get; set; }
+        private Vector3 _userPosition;
+        public TgcFpsCamera cam { get; set; }
+        public CustomSprite hachaSprite;
+        public Drawer2D drawer2D;
+        private float TIEMPO_REDUCIR_HAMBRE = 2, TIEMPO_REDUCIR_BEBIDA = 10, TIEMPO_REDUCIR_VIDA = 5; //segundos
+        private float TIEMPO_AUMENTAR_ENERGIA = 5;
+        private float _timerEnergia;
+
+        private int _hambre, _sed,_vida,_energia;
 
 
+        public float timerEnergia { get { return _timerEnergia; }
+        set { _timerEnergia = value;
+                if(timerEnergia >= TIEMPO_AUMENTAR_ENERGIA)
+                {
+                    if(sed > 0 && hambre > 0 && energia != 100)
+                    energia += 5;
+
+                    _timerEnergia = 0;
+                }
+            }
         }
 
+        public int vida { get { return _vida; }
+        set { _vida = value;
+                hud.actualizarStatusPersonaje();
+            }
+        }
 
-        public int vida { get; set; }
-        private int _hambre, _sed;
-
+        public int energia
+        {
+            get { return _energia; }
+            set
+            {
+                _energia = value;
+                if (_energia < 0) _energia = 0;
+                hud.actualizarStatusPersonaje();
+            }
+        }
 
         public int hambre { get { return _hambre; }
             set {
-                _hambre = value; }
+                _hambre = value;
+                hud.actualizarStatusPersonaje();
+            }
 
         }
         public int sed { get { return _sed; }
             set {
                 _sed = value;
-                hud.agua.Text = "Agua: " + sed;
-                if(sed>=80 && sed < 100) { Console.WriteLine("SED ENTRE 80 y 100"); }
+                hud.actualizarStatusPersonaje();
                     
                 }
         }
-        public int energia { get; set; }
-        private List<Recurso> recursos;
-        public Hud.Hud hud;
-        public String mediaDir { get; set; }
-        private Vector3 _userPosition;
-        public TgcFpsCamera cam { get; set; }    
-        public CustomSprite hachaSprite;
-        public Drawer2D drawer2D;
-        private float TIEMPO_REDUCIR_HAMBRE_SED = 10; //segundos
-        private float _timerHambreYsed;
+       
 
-        public float timerHambreYSed {
-            get { return _timerHambreYsed; }
-            set { _timerHambreYsed = value;
-                  if(_timerHambreYsed >= TIEMPO_REDUCIR_HAMBRE_SED)
+        private float _timerSed, _timerHambre, _timerVida;
+
+
+        public float timerVida { get { return _timerVida; } set { _timerVida = value;
+                if(timerVida >= TIEMPO_REDUCIR_VIDA)
+                {
+                    if (vida >= 10) vida -= 10;
+                    else vida = 0; //PERSONAJE MUERTO!!
+                    //TODO reiniciar juego
+                    _timerVida = 0;
+                }
+               } }
+
+        public float timerSed {get { return _timerSed; } set { _timerSed = value;
+                if (timerSed >= TIEMPO_REDUCIR_BEBIDA)
+                {
+                    if (sed >= 10) sed -= 10;
+                    else sed = 0;                 
+
+                    _timerSed = 0;
+                }
+            }
+        }
+
+
+        public float timerHambre
+        {
+            get { return _timerHambre; }
+            set
+            {
+                _timerHambre = value;
+                if (timerHambre >= TIEMPO_REDUCIR_HAMBRE)
                 {
                     if (hambre >= 10) hambre -= 10;
                     else hambre = 0;
 
-                    if (sed >= 10) sed -= 10;
-                    else sed = 0;
+                    _timerHambre = 0;
 
-                    _timerHambreYsed = 0;
-                }  
-
+                }
             }
-
         }
+
+
+      
 
         public Vector3 userPosition {
             get { return _userPosition; }
@@ -84,9 +132,9 @@ namespace TGC.Group.Model
             this.hud = hud;
             this.mediaDir = dir;
             drawer2D = new Drawer2D();
-            vida = 100;
-            sed = 100;
-            hambre = 100;
+            vida = 110;
+            sed = 110;
+            hambre = 110;
             energia = 100;
             cargarHacha();
         }      
@@ -127,19 +175,21 @@ namespace TGC.Group.Model
             drawer2D.EndDrawSprite();
         }
 
+
+        #region agregarYRemoverRecursos
         public void quitarRecurso(Recurso recurso)
         {
             var index = -1;
 
-            for(int i =0; i< recursos.Count;i++)
+            for (int i = 0; i < recursos.Count; i++)
             {
-                if(recursos[i] == recurso)
+                if (recursos[i] == recurso)
                 {
                     index = i;
                 }
             }
 
-            if(index != -1)
+            if (index != -1)
             {
                 recursos.RemoveAt(index);
             }
@@ -151,6 +201,9 @@ namespace TGC.Group.Model
             recursos.Add(recurso);
             hud.agregarItem(recurso);
         }
+        #endregion
+
+
 
     }
 }

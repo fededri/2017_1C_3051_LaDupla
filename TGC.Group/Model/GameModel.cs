@@ -315,6 +315,7 @@ namespace TGC.Group.Model
             PreUpdate();
 
             Gui.Instance.ElapsedTime = ElapsedTime;
+            if(cam!= null)
             cam.currentworld = currentWorld;
 
 
@@ -360,8 +361,11 @@ namespace TGC.Group.Model
             worlds[2][2].update(Camara.Position, cam);
             Camara.UpdateCamera(ElapsedTime);
 
-            var t = personaje.timerHambreYSed;
-            personaje.timerHambreYSed = t + ElapsedTime;
+           
+            personaje.timerHambre += ElapsedTime;
+            personaje.timerSed += ElapsedTime;
+            personaje.timerVida += ElapsedTime;
+            personaje.timerEnergia += ElapsedTime;
             
             //mostrar posicion actual
            /* string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
@@ -380,35 +384,46 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.U))
             {
-                checkearObjetoMasCercano(Camara.Position);
+                if(personaje.energia <= 0)
+                {
+                    Gui.Instance.mensaje.Text = "No tienes energia, recupera hambre y sed para poder obtenerla";
+                    Gui.Instance.mostrarMensaje = true;
+                    Gui.Instance.timerMensaje = 0;
+                }else
+                {
+                    personaje.energia -= 10;
+                    checkearObjetoMasCercano(Camara.Position);
+                }
+               
+
             }
 
-            if (Input.keyPressed(Key.NumPad1))
+            if (Input.keyPressed(Key.D1))
             {
                 hud.usarItem(1);
             }
 
-            if (Input.keyPressed(Key.NumPad2))
+            if (Input.keyPressed(Key.D2))
             {
                 hud.usarItem(2);
             }
 
-            if (Input.keyPressed(Key.NumPad3))
+            if (Input.keyPressed(Key.D3))
             {
                 hud.usarItem(3);
             }
 
-            if (Input.keyPressed(Key.NumPad4))
+            if (Input.keyPressed(Key.D4))
             {
                 hud.usarItem(4);
             }
 
-            if (Input.keyPressed(Key.NumPad5))
+            if (Input.keyPressed(Key.D5))
             {
                 hud.usarItem(5);
             }
 
-            if (Input.keyPressed(Key.NumPad6))
+            if (Input.keyPressed(Key.D6))
             {
                 hud.usarItem(6);
             }

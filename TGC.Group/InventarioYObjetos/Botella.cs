@@ -22,9 +22,7 @@ namespace TGC.Group.InventarioYObjetos
         }
 
         public override bool usar(Personaje personaje)
-        {
-            if (tieneAgua)
-            {
+        {           
                 if (personaje.sed > (100 - reduceSed)) personaje.sed = 100;
                 else
                 {
@@ -33,8 +31,6 @@ namespace TGC.Group.InventarioYObjetos
                 tieneAgua = false;
                 personaje.quitarRecurso(this);
                 return true;
-            }
-            return true;
 
         }
     }
