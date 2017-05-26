@@ -23,7 +23,7 @@ namespace TGC.Group.Model
         public TgcFpsCamera cam { get; set; }
         public CustomSprite hachaSprite;
         public Drawer2D drawer2D;
-        private float TIEMPO_REDUCIR_HAMBRE = 2, TIEMPO_REDUCIR_BEBIDA = 10, TIEMPO_REDUCIR_VIDA = 5; //segundos
+        private float TIEMPO_REDUCIR_HAMBRE = 10, TIEMPO_REDUCIR_BEBIDA = 20, TIEMPO_REDUCIR_VIDA = 5; //segundos
         private float TIEMPO_AUMENTAR_ENERGIA = 5;
         private float _timerEnergia;
 

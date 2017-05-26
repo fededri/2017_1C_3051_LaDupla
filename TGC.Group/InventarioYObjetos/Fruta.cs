@@ -9,6 +9,8 @@ namespace TGC.Group.InventarioYObjetos
 {
     class Fruta : Recurso
     {
+        private int aumentaComida = 40;
+
         public Fruta()
         {
             tipo = TiposRecursos.Comida;
@@ -21,7 +23,13 @@ namespace TGC.Group.InventarioYObjetos
 
         public override bool usar(Personaje personaje)
         {
-            return false;
+            if (personaje.hambre >= (100 - aumentaComida)) personaje.hambre = 100;
+            else
+            {
+                personaje.hambre += 20;
+            }
+            personaje.quitarRecurso(this);
+            return true;
         }
     }
 }
