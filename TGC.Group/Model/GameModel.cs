@@ -77,7 +77,8 @@ namespace TGC.Group.Model
         private int flag = 0;
         private LDSkyBox[] skyBoxs;
         int sectorToRender;
-      
+        private Vector3 initialPosition = new Vector3(0, 150f, 0);
+
 
         //Boleano para ver si dibujamos el boundingbox
         private bool BoundingBox { get; set; }
@@ -123,7 +124,7 @@ namespace TGC.Group.Model
             personaje.agregarRecurso(hacha);
             loadWorld();
             
-            cam = new TgcFpsCamera(new Vector3(0, 150f, 0), Input);
+            cam = new TgcFpsCamera(initialPosition, Input);
             cam.currentworld = currentWorld;
             Camara = cam;
             personaje.cam = cam;
@@ -366,12 +367,42 @@ namespace TGC.Group.Model
             personaje.timerSed += ElapsedTime;
             personaje.timerVida += ElapsedTime;
             personaje.timerEnergia += ElapsedTime;
+
+            if(personaje.vida <= 0)
+            {
+                reiniciarJuego();
+                Gui.Instance.mensaje.Text = "Has perdido! intentalo de nuevo";
+                Gui.Instance.mostrarMensaje = true;
+                Gui.Instance.mensaje.Color = Color.Red;
+                Gui.Instance.timerMensaje = 0;
+            }
             
             //mostrar posicion actual
            /* string pos = "(" + cam.positionEye.X + ";" + cam.positionEye.Y + ";" + cam.positionEye.Z;
             GuiController.Instance.mensaje.Text = pos;
             GuiController.Instance.mostrarMensaje = true;
             GuiController.Instance.timerMensaje = 0;*/
+        }
+
+        public void reiniciarJuego()
+        {
+            personaje = null;
+            hud = null;
+            hud = new Hud.Hud(MediaDir + "Hud\\");
+            personaje = new Personaje(hud, MediaDir);
+            hud.personaje = personaje;
+            cam = new TgcFpsCamera(initialPosition, Input);
+            cam.currentworld = currentWorld;
+            Camara = cam;
+            personaje.cam = cam;
+            personaje.vida = 100;
+
+            var botellaAgua = new Botella();
+            botellaAgua.tieneAgua = true;
+            var hacha = new Hacha();
+            personaje.agregarRecurso(botellaAgua);
+            personaje.agregarRecurso(botellaAgua);
+            personaje.agregarRecurso(hacha);
         }
 
 
@@ -553,7 +584,7 @@ namespace TGC.Group.Model
             
            
 
-            if (Gui.Instance.mostrarMensaje && Gui.Instance.timerMensaje < 0.8)
+            if (Gui.Instance.mostrarMensaje && Gui.Instance.timerMensaje < Gui.Instance.tiempoMensaje)
             {
                 Gui.Instance.mensaje.render();
                 Gui.Instance.timerMensaje += ElapsedTime;

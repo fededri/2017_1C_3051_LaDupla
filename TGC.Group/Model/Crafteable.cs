@@ -108,8 +108,8 @@ namespace TGC.Group.Model
 
         public virtual void render()
         {
-            mesh.render();
-          
+            
+            mesh.render();         
         
         }
 

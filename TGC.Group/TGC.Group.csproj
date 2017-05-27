@@ -98,6 +98,7 @@
     <Compile Include="Hud\Hud.cs" />
     <Compile Include="InventarioYObjetos\Arbusto.cs" />
     <Compile Include="InventarioYObjetos\Botella.cs" />
+    <Compile Include="InventarioYObjetos\CajaSorpresa.cs" />
     <Compile Include="InventarioYObjetos\Fruta.cs" />
     <Compile Include="InventarioYObjetos\Hacha.cs" />
     <Compile Include="InventarioYObjetos\IEnums.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="InventarioYObjetos\Item.cs" />
     <Compile Include="InventarioYObjetos\ItemContainer.cs" />
     <Compile Include="InventarioYObjetos\Madera.cs" />
+    <Compile Include="InventarioYObjetos\Motor.cs" />
     <Compile Include="InventarioYObjetos\ObjectsFactory.cs" />
     <Compile Include="InventarioYObjetos\Palmera.cs" />
     <Compile Include="InventarioYObjetos\Piedra.cs" />

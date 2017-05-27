@@ -20,6 +20,7 @@ namespace TGC.Group.Camara
         public int horarioActual { get; set; }
         public bool bloquearAvance { get; set; }
         public int horaDelDia { get; set; }
+        public float tiempoMensaje = 1f;
 
 
         //agrgar time segundos a timerClima

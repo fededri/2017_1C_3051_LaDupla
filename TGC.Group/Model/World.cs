@@ -7,9 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
+using TGC.Core.Geometry;
 using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
 using TGC.Core.Terrain;
+using TGC.Core.Textures;
 using TGC.Group.Camara;
 using TGC.Group.InventarioYObjetos;
 using TGC.Group.Shaders;
@@ -71,6 +73,7 @@ namespace TGC.Group.Model
             crearPalmeras();
             crearArbustos();
             crearRocas();
+            crearCajas(); 
         }
 
         public void refreshTerrain()
@@ -113,6 +116,24 @@ namespace TGC.Group.Model
             }
         }
 
+        public void crearCajas()
+        {
+            TgcBox box = new TgcBox();
+            var texture = TgcTexture.createTexture(mediaDir + "MeshCreator\\Textures\\Madera\\cajaMadera3.jpg");
+            var boxSize = new Vector3(300, 300, 300);
+            box = TgcBox.fromSize(boxSize, texture);
+
+            var random = new Random();
+            int a = size / 2;
+            var offsetX = random.Next((int)position.X - (size - a), (int)position.X + (size - a));
+            var offsetZ = random.Next((int)position.Z - (size - a), (int)position.Z + (size - a));
+            box.Transform = Matrix.Translation(new Vector3(offsetX, calcularAltura(offsetX, offsetZ) + 150, offsetZ));
+            //box.AutoTransformEnable = true;
+                       
+            CajaSorpresa caja = new CajaSorpresa(box);
+        
+            objects.Add(caja);
+        }
 
         public void render(TgcFrustum frustum)
         {
@@ -132,13 +153,26 @@ namespace TGC.Group.Model
                 if (objects != null && objects.Count > 0)
                     foreach (var crafteable in objects)
                     {
-                        TgcCollisionUtils.FrustumResult frustumResult = TgcCollisionUtils.classifyFrustumAABB(frustum, crafteable.mesh.BoundingBox);
-                        if (frustumResult.Equals(TgcCollisionUtils.FrustumResult.INTERSECT)
-                            || frustumResult.Equals(TgcCollisionUtils.FrustumResult.INSIDE))
+                        if (crafteable is CajaSorpresa)
                         {
-                            crafteable.render();
-                        };
-                        //crafteable.render();
+                            TgcCollisionUtils.FrustumResult frustumResult = TgcCollisionUtils.classifyFrustumAABB(frustum, (crafteable as CajaSorpresa).box.toMesh("caja").BoundingBox);
+                            if (frustumResult.Equals(TgcCollisionUtils.FrustumResult.INTERSECT)
+                                || frustumResult.Equals(TgcCollisionUtils.FrustumResult.INSIDE))
+                            {
+                                (crafteable as CajaSorpresa).box.render();
+                            };
+                           
+                        }else
+                        {
+                            TgcCollisionUtils.FrustumResult frustumResult = TgcCollisionUtils.classifyFrustumAABB(frustum, crafteable.mesh.BoundingBox);
+                            if (frustumResult.Equals(TgcCollisionUtils.FrustumResult.INTERSECT)
+                                || frustumResult.Equals(TgcCollisionUtils.FrustumResult.INSIDE))
+                            {
+                                crafteable.render();
+                            };
+                        }
+
+                      
                     }
                 this.rendered = true;
             }

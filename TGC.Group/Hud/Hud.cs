@@ -125,6 +125,12 @@ namespace TGC.Group.Hud
 
         }
 
+        public void reset()
+        {
+            items.Clear();
+            actualizarStatusPersonaje();
+        }
+
 
         #region update atributos
         public void actualizarStatusPersonaje()
@@ -138,7 +144,10 @@ namespace TGC.Group.Hud
             cargarHambreSprite();
             cargarVidaSprite();
             cargarEnergiaSprite();
+          
         }
+
+    
 
         public void cargarEnergiaSprite()
         {
